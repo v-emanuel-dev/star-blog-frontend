@@ -85,7 +85,7 @@ export class LoginComponent {
   loginWithGoogle() {
     this.googleLoginInProgress = true;
     this.loading = true;
-    window.open('http://localhost:3000/api/auth/google', '_self');
+    window.open('https://blog-backend-production-c203.up.railway.app/api/auth/google', '_self');
   }
 
   logout() {
