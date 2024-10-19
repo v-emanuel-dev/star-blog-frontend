@@ -7,7 +7,7 @@ import { Category } from '../models/category.model';
   providedIn: 'root',
 })
 export class CategoryService {
-  private apiUrl = 'https://blog-backend-production-c203.up.railway.app:8080/api/categories'; // Ajuste conforme sua API
+  private apiUrl = 'https://blog-backend-production-c203.up.railway.app/api/categories'; // Ajuste conforme sua API
 
   constructor(private http: HttpClient) {}
 
