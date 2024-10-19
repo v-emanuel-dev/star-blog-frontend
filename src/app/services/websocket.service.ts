@@ -22,7 +22,7 @@ export class WebSocketService {
   private userId: string | null = localStorage.getItem('userId');
 
   constructor(private http: HttpClient) {
-    this.socket = io('https://blog-backend-production-c203.up.railway.app:8080');
+    this.socket = io('https://blog-backend-production-c203.up.railway.app');
 
     this.socket.on('connect', () => {
     });
