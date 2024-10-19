@@ -11,7 +11,7 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
 import { DashboardComponent } from '../app/components/admin/users/dashboard.component'; // Importando AdminDashboardComponent
 
 const routes: Routes = [
-  { path: '', redirectTo: '/blog', pathMatch: 'full' },
+  { path: '', redirectTo: '/admin', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'blog', component: BlogListComponent },
