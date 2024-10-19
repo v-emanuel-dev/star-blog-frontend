@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'http://blog-backend-production-c203.up.railway.app:8080/api/users';
+  private apiUrl = 'https://blog-backend-production-c203.up.railway.app:8080/api/users';
 
   public profilePictureSubject: BehaviorSubject<string | null> =
     new BehaviorSubject<string | null>(null);
