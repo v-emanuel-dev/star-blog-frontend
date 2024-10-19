@@ -8,7 +8,7 @@ import { AuthService } from './auth.service'; // Importe o AuthService
   providedIn: 'root',
 })
 export class PostService {
-  private apiUrl = 'http://localhost:3000/api/posts';
+  private apiUrl = 'https://blog-backend-production-c203.up.railway.app:8080/api/posts';
 
   constructor(private http: HttpClient, private authService: AuthService) {} // Injete AuthService
 
