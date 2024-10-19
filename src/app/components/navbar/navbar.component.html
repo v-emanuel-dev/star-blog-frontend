@@ -1,0 +1,263 @@
+<nav class="bg-gray-800">
+  <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div class="relative flex h-16 items-center justify-between">
+      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+        <button
+          type="button"
+          (click)="isMenuOpen = !isMenuOpen"
+          class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+          aria-controls="mobile-menu"
+          [attr.aria-expanded]="isMenuOpen ? 'true' : 'false'"
+        >
+          <span class="sr-only">Open main menu</span>
+          <svg
+            *ngIf="!isMenuOpen"
+            class="block h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
+          </svg>
+          <svg
+            *ngIf="isMenuOpen"
+            class="block h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-shrink-0 items-center">
+        <a routerLink="/blog" class="ml-12">
+          <i class="fa-solid fa-splotch fa-2x text-white"></i>
+        </a>
+      </div>
+      <span class="text-white text-xl font-bold ml-3">Star Blog</span>
+      <span
+        class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"
+      >
+        <div class="hidden sm:ml-6 sm:block">
+          <div class="flex space-x-4">
+            <a
+              class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+              aria-current="page"
+              routerLink="/blog"
+              >Blog</a
+            >
+            <a
+              *ngIf="!isLoggedIn()"
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              routerLink="/login"
+              >Login</a
+            >
+            <a
+              *ngIf="!isLoggedIn()"
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              routerLink="/register"
+              >Register</a
+            >
+            <a
+              *ngIf="isLoggedIn()"
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              routerLink="/user"
+              >User Profile</a
+            >
+            <a
+              *ngIf="isLoggedIn()"
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              (click)="logout()"
+              >Logout</a
+            >
+          </div>
+        </div>
+      </span>
+
+      <!-- Notificações na Navbar -->
+      <div class="relative">
+        <button
+          type="button"
+          class="relative flex items-center text-gray-400 hover:text-white focus:outline-none"
+          (click)="isNotificationsOpen = !isNotificationsOpen"
+          aria-haspopup="true"
+          [attr.aria-expanded]="isNotificationsOpen ? 'true' : 'false'"
+        >
+          <span class="sr-only">Ver notificações</span>
+          <i class="fa-solid fa-bell fa-lg"></i>
+          <span
+            *ngIf="unreadNotificationsCount > 0"
+            class="absolute -top-1 -right-1 inline-block h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center pointer-events-none"
+          >
+            {{ unreadNotificationsCount }}
+          </span>
+        </button>
+
+        <div
+          *ngIf="isNotificationsOpen"
+          class="absolute right-0 z-10 mt-1 w-64 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          role="menu"
+          aria-orientation="vertical"
+        >
+          <div *ngIf="notifications.length > 0; else noNotifications">
+            <div
+              *ngFor="let notification of notifications; let i = index"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 cursor-pointer"
+              (click)="markAsRead(i)"
+            >
+              {{ notification.message }} {{ notification.content }}
+            </div>
+          </div>
+          <ng-template #noNotifications>
+            <div class="px-4 py-2 text-sm text-gray-500">
+              Sem novas notificações
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Profile dropdown -->
+      <div class="relative ml-3">
+        <div>
+          <button
+            type="button"
+            class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+            id="user-menu-button"
+            (click)="isDropdownOpen = !isDropdownOpen"
+            aria-expanded="isDropdownOpen"
+            aria-haspopup="true"
+          >
+            <span class="absolute -inset-1.5"></span>
+            <span class="sr-only">Open user menu</span>
+            <div *ngIf="profilePicture; else noImage">
+              <img
+                [src]="profilePicture"
+                alt="Profile Image"
+                class="h-8 w-8 rounded-full"
+              />
+            </div>
+            <ng-template #noImage>
+              <img
+                [src]="defaultProfilePicture"
+                alt="Profile Image"
+                class="h-8 w-8 rounded-full"
+              />
+            </ng-template>
+          </button>
+        </div>
+
+        <div
+          class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          role="menu"
+          *ngIf="isDropdownOpen"
+          aria-orientation="vertical"
+          aria-labelledby="user-menu-button"
+          tabindex="-1"
+        >
+          <a
+            *ngIf="isLoggedIn() && isAdmin()"
+            routerLink="/admin"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+            role="menuitem"
+            tabindex="-1"
+            id="user-menu-item-2"
+            >Dashboard</a
+          >
+          <a
+            *ngIf="!isLoggedIn()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+            routerLink="/blog"
+            role="menuitem"
+            tabindex="-1"
+            id="user-menu-item-0"
+            >Blog</a
+          >
+          <a
+            *ngIf="!isLoggedIn()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+            routerLink="/login"
+            role="menuitem"
+            tabindex="-1"
+            id="user-menu-item-1"
+            >Sign in</a
+          >
+          <a
+            *ngIf="!isLoggedIn()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+            routerLink="/register"
+            role="menuitem"
+            tabindex="-1"
+            id="user-menu-item-2"
+            >Sign up</a
+          >
+          <a
+            *ngIf="isLoggedIn()"
+            routerLink="/user"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+            role="menuitem"
+            tabindex="-1"
+            id="user-menu-item-3"
+            >Your Profile</a
+          >
+          <a
+            *ngIf="isLoggedIn()"
+            (click)="logout()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+            role="menuitem"
+            tabindex="-1"
+            id="user-menu-item-2"
+            >Sign out</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm:hidden" id="mobile-menu" *ngIf="isMenuOpen">
+    <div class="space-y-1 px-2 pb-3 pt-2">
+      <a
+        class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
+        aria-current="page"
+        routerLink="/blog"
+        >Blog</a
+      >
+      <a
+        *ngIf="!isLoggedIn()"
+        class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        routerLink="/login"
+        >Login</a
+      >
+      <a
+        *ngIf="!isLoggedIn()"
+        class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        routerLink="/register"
+        >Register</a
+      >
+      <a
+        *ngIf="isLoggedIn()"
+        class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        routerLink="/user"
+        >User Profile</a
+      >
+      <a
+        *ngIf="isLoggedIn()"
+        class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        (click)="logout()"
+        >Logout</a
+      >
+    </div>
+  </div>
+</nav>

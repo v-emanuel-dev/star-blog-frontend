@@ -1,0 +1,20 @@
+.custom-pill {
+  padding: 0.5rem 1rem; /* Ajuste do padding conforme necessário */
+  font-size: 0.8rem; /* Tamanho do texto (pode ser ajustado) */
+  font-weight: 600; /* Peso da fonte regular */
+}
+
+.custom-pill .remove-icon {
+  font-size: 1rem; /* Tamanho do "x" (pode ser ajustado) */
+}
+
+.remove-icon {
+  font-size: 1.1rem !important;
+  /* Adicione uma cor personalizada se desejar */
+  color: #1F2937; /* Exemplo: vermelho */
+  padding: 0; /* Remover padding para manter o botão compacto */
+}
+
+.remove-icon:hover {
+  color: #ff0000; /* Exemplo: cor mais escura ao passar o mouse */
+}

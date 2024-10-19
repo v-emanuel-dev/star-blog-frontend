@@ -1,0 +1,9 @@
+<!-- notifications.component.html -->
+<div class="notifications" *ngIf="notifications.length">
+  <h3>Notificações</h3>
+  <ul>
+    <li *ngFor="let notification of notifications">
+      {{ notification.message }} - {{ notification.content }}
+    </li>
+  </ul>
+</div>

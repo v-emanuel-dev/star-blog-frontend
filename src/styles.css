@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* src/styles.css ou src/styles.scss */
+
+body {
+  background-color: #F3F4F6; /* Define o fundo da página */
+}
+
+.ck-editor__editable {
+  min-height: 250px;
+}
