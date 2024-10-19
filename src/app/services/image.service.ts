@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class ImageService {
-  private serverUrl: string = 'https://blog-backend-production-c203.up.railway.app'; // Substitua pela URL do seu servidor Node.js
+  private serverUrl: string = 'https://blog-backend-production-c203.up.railway.app:8080'; // Substitua pela URL do seu servidor Node.js
   private profilePicSubject = new BehaviorSubject<string | null>(null);
   profilePic$ = this.profilePicSubject.asObservable();
 
