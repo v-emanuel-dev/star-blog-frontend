@@ -44,7 +44,7 @@ export class WebSocketService {
 
   fetchNotifications(userId: string) {
     this.http
-      .get<Notification[]>(`http://localhost:3000/api/comments/${userId}/notifications`)
+      .get<Notification[]>(`https://blog-backend-production-c203.up.railway.app/api/comments/${userId}/notifications`)
       .subscribe(
         (notifications) => {
           const validNotifications = notifications.filter(n => n.message && n.postId);
