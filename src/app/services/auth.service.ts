@@ -9,7 +9,7 @@ import { WebSocketService } from './websocket.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/api/auth';
+  private baseUrl = 'https://blog-backend-production-c203.up.railway.app:8080/api/auth';
 
   private userNameSubject = new BehaviorSubject<string | undefined>(
     this.getUserName()
