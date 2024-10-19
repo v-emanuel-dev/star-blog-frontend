@@ -7,7 +7,7 @@ import { Comment } from '../models/comment.model';
   providedIn: 'root',
 })
 export class CommentService {
-  private apiUrl = 'https://blog-backend-production-c203.up.railway.app:8080/api/comments';
+  private apiUrl = 'https://blog-backend-production-c203.up.railway.app/api/comments';
 
   constructor(private http: HttpClient) {}
 
