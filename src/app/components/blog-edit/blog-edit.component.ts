@@ -143,11 +143,7 @@ export class BlogEditComponent implements OnInit {
     this.categoryService.getAllCategories().subscribe(
       (data: Category[]) => {
         this.categories = data;
-        console.log('Categorias carregadas:', this.categories);
       },
-      (error) => {
-        console.error('Erro ao obter categorias:', error);
-      }
     );
   }
 
@@ -164,11 +160,8 @@ export class BlogEditComponent implements OnInit {
           this.newCategoryName = '';
         },
         error: (error) => {
-          console.error('Erro ao criar categoria:', error);
         },
       });
-    } else {
-      console.error('O nome da categoria não pode estar vazio');
     }
   }
 
@@ -180,8 +173,6 @@ export class BlogEditComponent implements OnInit {
   deleteCategory(categoryId: number): void {
     if (categoryId) {
       this.openModal(categoryId); // Abre o modal de confirmação para deletar a categoria
-    } else {
-      console.error('ID da categoria não é válido:', categoryId);
     }
   }
 
@@ -190,13 +181,13 @@ export class BlogEditComponent implements OnInit {
     this.categoryService.deleteCategory(categoryId).subscribe({
       next: () => {
         this.loadCategories(); // Atualiza a lista de categorias após a exclusão
-        this.message = 'Categoria deletada com sucesso!';
+        this.message = 'Category deleted successfully!';
         this.success = true;
         this.closeModal(); // Fecha o modal após a deleção
       },
       error: (error) => {
-        console.error('Erro ao deletar categoria:', error); // Exibe o erro detalhado no console
-        this.message = 'Falha ao deletar a categoria.';
+        console.error('Error deleting category:', error); // Exibe o erro detalhado no console
+        this.message = 'Failed to delete category.';
         this.success = false;
       },
       complete: () => {
@@ -235,7 +226,5 @@ export class BlogEditComponent implements OnInit {
     } else {
       this.selectedCategoryIds.push(categoryId);
     }
-
-    console.log('Categorias selecionadas:', this.selectedCategoryIds);
   }
 }
