@@ -28,6 +28,10 @@ export class RegisterComponent implements OnInit {
     });
   }
 
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   // Método para lidar com o registro
   register(form: NgForm) {
     console.log('Register method called. Form validity:', form.valid);
@@ -55,7 +59,7 @@ export class RegisterComponent implements OnInit {
         console.log('Registration response received:', response);
         this.message = 'Registration successful! Please log in.';
         this.success = true;
-        form.reset();
+        form.reset(); // Ou limpar campos manualmente se preferir
 
         setTimeout(() => {
           this.router.navigate(['/login']);
