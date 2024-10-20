@@ -192,11 +192,11 @@ export class BlogListComponent implements OnInit {
       (post) => post.visibility === 'public'
     );
     if (hasPrivatePosts && hasPublicPosts) {
-      this.postsTitle = 'Public and Private Posts';
+      this.postsTitle = 'Public and Private';
     } else if (hasPrivatePosts) {
-      this.postsTitle = 'Private Posts';
+      this.postsTitle = 'Private';
     } else {
-      this.postsTitle = 'Public Posts';
+      this.postsTitle = 'Public';
     }
   }
 
