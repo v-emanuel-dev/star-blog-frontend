@@ -61,7 +61,7 @@ export class AuthService {
           if (profilePicUrl) {
             profilePicUrl = profilePicUrl.replace(/\\/g, '/');
             if (!profilePicUrl.startsWith('http')) {
-              profilePicUrl = `http://localhost:3000/${profilePicUrl}`;
+              profilePicUrl = `https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/${profilePicUrl}`;
             }
             localStorage.setItem('profilePicture', profilePicUrl);
           } else {
