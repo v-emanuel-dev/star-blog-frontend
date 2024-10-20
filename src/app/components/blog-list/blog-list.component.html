@@ -111,13 +111,10 @@
               <span class="text-black">{{ category.name }}</span>
             </span>
           </div>
-          <div
-            *ngIf="isLoggedIn"
-            class="flex justify-between items-center mt-3"
-          >
+          <div *ngIf="isLoggedIn" class="flex flex-wrap justify-between items-center mt-3 gap-2">
             <div>
               <button
-              *ngIf="post && post.id !== undefined"
+                *ngIf="post && post.id !== undefined"
                 (click)="toggleLike(post.id)"
                 class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition duration-300"
                 title="Like Post"
@@ -126,7 +123,7 @@
                 {{ post.likes !== undefined ? post.likes : 0 }}
               </button>
             </div>
-            <div class="flex justify-end space-x-2">
+            <div class="flex flex-wrap justify-end gap-2">
               <a
                 [routerLink]="['/blog/edit', post.id]"
                 class="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 transition duration-300"
@@ -155,6 +152,7 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <!-- Modal Overlay -->
