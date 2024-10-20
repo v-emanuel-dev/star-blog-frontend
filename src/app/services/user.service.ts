@@ -128,7 +128,7 @@ export class UserService {
   cleanUrl(url: string | null): string | null {
     if (!url) return null;
     // Remove o prefixo 'http://localhost:3000/' se existir
-    const prefix = 'http://localhost:3000/';
+    const prefix = 'https://blog-backend-production-c203.up.railway.app/';
     return url.startsWith(prefix) ? url.replace(prefix, '') : url;
   }
 }
