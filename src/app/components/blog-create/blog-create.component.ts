@@ -27,7 +27,7 @@ export class BlogCreateComponent implements OnInit {
   currentPostId: number | null = null;
   message: string | null = null; // Permite que message seja uma string ou null
   editorContent: string = '';
-  public isEmojiPickerVisible: boolean = false;
+  isModalOpen: boolean = false;
 
   public Editor = ClassicEditor.default; // Use a propriedade .default aqui
   public blogEditorContent: string = ''; // Variável renomeada para evitar conflitos
@@ -82,12 +82,12 @@ export class BlogCreateComponent implements OnInit {
   }
 
   public onReady(editor: any): void {
-    editor.plugins.get('FileRepository').createUploadAdapter = (
-      loader: any
-    ) => {
-      return new ImageUpload(loader, this.http);
-    };
+    // Remover o adaptador de upload de imagem
+    delete editor.plugins.get('FileRepository').createUploadAdapter;
+
+    // Se necessário, você pode adicionar outras configurações aqui
   }
+
 
   private getUserId(): void {
     const storedUserId = localStorage.getItem('userId');
@@ -248,4 +248,47 @@ export class BlogCreateComponent implements OnInit {
 
     console.log('Categorias selecionadas:', this.selectedCategoryIds);
   }
+
+  // Método para abrir o modal
+  openModal(postId: number): void {
+    this.currentPostId = postId; // Armazena o ID do post a ser deletado
+    this.isModalOpen = true; // Abre o modal
+  }
+
+  // Método para fechar o modal
+  closeModal(): void {
+    this.isModalOpen = false; // Fecha o modal
+    this.currentPostId = null; // Limpa o ID atual
+  }
+
+  // Método de confirmação de deleção
+  confirmDelete(postId: number): void {
+    this.openModal(postId); // Abre o modal com o ID do post
+  }
+
+  // Método para deletar o post
+  deletePostModal(postId: number): void {
+    if (postId) {
+      this.postService.deletePost(postId).subscribe({
+        next: () => {
+          this.message = 'Category deleted successfully!';
+          this.success = true;
+          this.closeModal(); // Fecha o modal após a deleção
+        },
+        error: (err) => {
+          console.error('Error category post:', err); // Exibe o erro detalhado no console
+          this.message = 'Failed to category.';
+          this.success = false;
+        },
+        complete: () => {
+          setTimeout(() => {
+            this.message = ''; // Limpa a mensagem após um tempo
+          }, 2000);
+        },
+      });
+    } else {
+      console.error('Post ID is not valid:', postId);
+    }
+  }
+
 }
