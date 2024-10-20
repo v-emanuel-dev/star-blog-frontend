@@ -5,6 +5,7 @@ import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
 import { Category } from '../../models/category.model';
 import { CategoryService } from '../../services/category.service';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic'; // Importa a classe do editor
 
 @Component({
   selector: 'app-blog-edit',
@@ -27,6 +28,29 @@ export class BlogEditComponent implements OnInit {
   post: Post;
   isModalOpen = false;
   currentCategoryId: number | null = null;
+  editorContent: string = '';
+
+  public Editor = ClassicEditor.default; // Use a propriedade .default aqui
+  public blogEditorContent: string = ''; // Variável renomeada para evitar conflitos
+  public editorConfig = {
+    toolbar: [
+      'heading',
+      '|',
+      'bold',
+      'italic',
+      'link',
+      'bulletedList',
+      'numberedList',
+      '|',
+      'imageUpload',
+      'blockQuote',
+      'insertTable',
+      'mediaEmbed',
+      '|',
+      'undo',
+      'redo',
+    ]
+  };
 
   constructor(
     private postService: PostService,
@@ -75,6 +99,13 @@ export class BlogEditComponent implements OnInit {
         this.router.navigate(['/blog']);
       },
     });
+  }
+
+  public onReady(editor: any): void {
+    // Remover o adaptador de upload de imagem
+    delete editor.plugins.get('FileRepository').createUploadAdapter;
+
+    // Se necessário, você pode adicionar outras configurações aqui
   }
 
   updatePost(): void {
