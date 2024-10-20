@@ -72,7 +72,7 @@ export class BlogListComponent implements OnInit {
         }
       },
       error => {
-        console.error('Erro ao curtir/descurtir post:', error);
+        console.error('Error liking/disliking post:', error);
       }
     );
   }
@@ -90,7 +90,7 @@ export class BlogListComponent implements OnInit {
             return this.categoryService.getCategoriesByPostId(post.id).pipe(
               catchError((error) => {
                 console.error(
-                  `Erro ao carregar categorias do post ${post.id}:`,
+                  `Error loading post categories ${post.id}:`,
                   error
                 );
                 return of([]); // Retorna um array vazio em caso de erro
@@ -147,7 +147,7 @@ export class BlogListComponent implements OnInit {
             this.loading = false; // Para parar o loading
           },
           error: (error) => {
-            console.error('Erro ao obter posts:', error);
+            console.error('Error fetching posts:', error);
             this.loading = false; // Para parar o loading em caso de erro
           },
         });
@@ -208,12 +208,12 @@ export class BlogListComponent implements OnInit {
     this.postService.deletePost(postId).subscribe({
       next: () => {
         this.getPosts(); // Atualiza a lista de posts após a exclusão
-        this.message = 'Post deletado com sucesso!';
+        this.message = 'Post deleted successfully!';
         this.success = true;
       },
       error: (err) => {
-        console.error('Erro ao deletar post:', err); // Exibe o erro detalhado no console
-        this.message = 'Falha ao deletar o post.';
+        console.error('Error deleting post:', err); // Exibe o erro detalhado no console
+        this.message = 'Failed to delete post.';
         this.success = false;
       },
       complete: () => {
@@ -228,7 +228,7 @@ export class BlogListComponent implements OnInit {
     const content = `Título: ${post.title}\n\nConteúdo:\n${post.content}`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, `${post.title}.txt`);
-    this.message = 'Texto exportado com sucesso!';
+    this.message = 'Text exported successfully!';
     this.success = true;
     setTimeout(() => {
       this.message = '';
@@ -258,13 +258,13 @@ export class BlogListComponent implements OnInit {
       this.postService.deletePost(postId).subscribe({
         next: () => {
           this.getPosts(); // Atualiza a lista de posts após a exclusão
-          this.message = 'Post deletado com sucesso!';
+          this.message = 'Post deleted successfully!';
           this.success = true;
           this.closeModal(); // Fecha o modal após a deleção
         },
         error: (err) => {
-          console.error('Erro ao deletar post:', err); // Exibe o erro detalhado no console
-          this.message = 'Falha ao deletar o post.';
+          console.error('Error deleting post:', err); // Exibe o erro detalhado no console
+          this.message = 'Failed to delete post.';
           this.success = false;
         },
         complete: () => {
@@ -274,7 +274,7 @@ export class BlogListComponent implements OnInit {
         },
       });
     } else {
-      console.error('ID do post não é válido:', postId);
+      console.error('Post ID is not valid:', postId);
     }
   }
 }
