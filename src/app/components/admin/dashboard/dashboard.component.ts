@@ -394,7 +394,7 @@ export class DashboardComponent implements OnInit {
       this.commentService.addComment(comment).subscribe(
         () => {
           console.log('Comentário enviado ao backend');
-          this.localStorage.setItem('selectedTab', this.selectedTab);         
+          localStorage.setItem('selectedTab', this.selectedTab);
           location.reload();
           this.loadComments(); // Método para carregar os comentários do post
         },
