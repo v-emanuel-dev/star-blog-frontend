@@ -395,7 +395,7 @@ export class DashboardComponent implements OnInit {
         () => {
           console.log('Comentário enviado ao backend');
           this.newComment = '';
-          // Atualiza a lista de comentários após adicionar um novo
+          location.reload();
           this.loadComments(); // Método para carregar os comentários do post
         },
         (error) => {
