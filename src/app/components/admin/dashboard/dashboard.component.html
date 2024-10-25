@@ -373,13 +373,11 @@
           <label for="postSelect" class="form-label">Select a post</label>
           <select
             id="postSelect"
-            [(ngModel)]="selectedPostIds"
-            (change)="onPostSelect()"
+            [(ngModel)]="selectedPostId"
             class="form-select"
-            multiple
-            aria-label="Selecionar múltiplos posts"
+            aria-label="Selecionar um post"
           >
-            <option disabled selected value="">Selecione os posts</option>
+            <option disabled selected value="">Selecione um post</option>
             <option *ngFor="let post of posts$ | async" [value]="post.id">
               {{ post.title }}
             </option>

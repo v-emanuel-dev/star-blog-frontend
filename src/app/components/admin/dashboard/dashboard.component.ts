@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit {
   postId: number = 0;
   newComment: string = '';
   comments: Comment[] = []; // Adicione isso na classe DashboardComponent
-  selectedPostIds: number[] = []; // Armazena múltiplos IDs de posts
+  selectedPostId: number | null = null; // ID do post selecionado (inicialmente nulo)
 
   sections = [
     { name: 'Users', isEditing: false },
@@ -82,6 +82,11 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadAllData();
+
+    const savedTab = localStorage.getItem('selectedTab');
+    if (savedTab) {
+      this.selectedTab = savedTab; // Define a aba selecionada com base no valor armazenado
+    }
   }
 
   selectTab(tab: string): void {
@@ -192,8 +197,9 @@ export class DashboardComponent implements OnInit {
             console.log('User updated successfully:', this.editingUser);
             this.message = 'User updated successfully!';
             this.success = true;
-            this.loadUsers();
             this.editingUser = null;
+            localStorage.setItem('selectedTab', this.selectedTab);
+            location.reload();
           },
           error: (error) => {
             console.error('Error updating user:', error);
@@ -201,7 +207,8 @@ export class DashboardComponent implements OnInit {
             this.success = false;
           },
           complete: () => {
-            this.loading = false; // Finaliza o carregamento em caso de sucesso
+            this.loading = false; // Finaliza o carregamento em qualquer caso
+            this.loadUsers(); // Atualiza a lista após a operação
           },
         });
     }
@@ -220,6 +227,8 @@ export class DashboardComponent implements OnInit {
         console.log('User deleted successfully:', response);
         this.message = 'User deleted successfully!';
         this.success = true;
+        localStorage.setItem('selectedTab', this.selectedTab);
+        location.reload();
         this.loadUsers();
       },
       error: (err) => {
@@ -250,6 +259,9 @@ export class DashboardComponent implements OnInit {
             console.log('Category updated successfully:', this.editingCategory);
             this.message = 'Category updated successfully!';
             this.success = true;
+            localStorage.setItem('selectedTab', this.selectedTab);
+            localStorage.setItem('selectedTab', this.selectedTab);
+            location.reload();
             this.loadCategories();
             this.editingCategory = null;
           },
@@ -309,6 +321,8 @@ export class DashboardComponent implements OnInit {
         console.log('Category deleted successfully:', response);
         this.message = 'Category deleted successfully!';
         this.success = true;
+        localStorage.setItem('selectedTab', this.selectedTab);
+        location.reload();
         this.loadCategories();
       },
       error: (err) => {
@@ -339,6 +353,8 @@ export class DashboardComponent implements OnInit {
             console.log('Comment updated successfully:', this.editingComment);
             this.message = 'Comment updated successfully!';
             this.success = true;
+            localStorage.setItem('selectedTab', this.selectedTab);
+            location.reload();
             this.loadComments();
             this.editingComment = null;
           },
@@ -355,26 +371,13 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  onPostSelect(): void {
-    console.log('Posts selecionados:', this.selectedPostIds);
-  }
-
   addComment(): void {
     const userId = parseInt(localStorage.getItem('userId') || '0', 10) || null;
     const username = localStorage.getItem('userName') || 'Visitor';
 
-    // Verifica se há comentários e posts selecionados
-    if (this.newComment.trim() === '' || this.selectedPostIds.length === 0) {
-      console.error(
-        'Por favor, insira um comentário e selecione pelo menos um post.'
-      );
-      return;
-    }
-
-    // Itera sobre os posts selecionados
-    this.selectedPostIds.forEach((postId) => {
+    if (this.newComment.trim()) {
       const comment: Comment = {
-        postId: postId,
+        postId: this.selectedPostId!,
         userId: userId,
         content: this.newComment,
         created_at: new Date().toISOString(),
@@ -383,20 +386,27 @@ export class DashboardComponent implements OnInit {
       };
 
       console.log('Conteúdo do novo comentário:', this.newComment);
-      console.log('ID do post associado:', postId);
+      console.log('ID do post associado:', this.selectedPostId);
+      console.log('ID do usuário:', userId);
+      console.log('Nome de usuário:', username);
+      console.log('Comentário a ser enviado:', comment);
 
       this.commentService.addComment(comment).subscribe(
-        (newComment) => {
-          this.comments.push(newComment);
-          console.log('Comentário enviado ao backend:', comment);
-          this.newComment = ''; // Limpa o campo de comentário após enviar
+        () => {
+          console.log('Comentário enviado ao backend');
+          this.newComment = '';
+          // Atualiza a lista de comentários após adicionar um novo
+          this.loadComments(); // Método para carregar os comentários do post
         },
         (error) => {
           console.error('Erro ao adicionar comentário:', error);
           this.message = 'Erro ao adicionar comentário. Tente novamente.';
         }
       );
-    });
+    } else {
+      console.error('O conteúdo do comentário não pode estar vazio');
+      this.message = 'Por favor, insira um comentário antes de enviar.';
+    }
   }
 
   cancelEditComment() {
@@ -412,6 +422,8 @@ export class DashboardComponent implements OnInit {
         console.log('Comment deleted successfully:', response);
         this.message = 'Comment deleted successfully!';
         this.success = true;
+        localStorage.setItem('selectedTab', this.selectedTab);
+        location.reload();
         this.loadComments();
       },
       error: (err) => {
@@ -443,8 +455,10 @@ export class DashboardComponent implements OnInit {
             console.log('Post updated successfully:', this.editingPost);
             this.message = 'Post updated successfully!';
             this.success = true;
-            this.loadPostsAdmin();
             this.editingPost = null;
+            localStorage.setItem('selectedTab', this.selectedTab);
+            location.reload();
+            this.loadPostsAdmin();
           },
           error: (error) => {
             console.error('Error updating post:', error);
@@ -472,6 +486,9 @@ export class DashboardComponent implements OnInit {
         console.log('Post deleted successfully:', response);
         this.message = 'Post deleted successfully!';
         this.success = true;
+        this.editingPost = null;
+        localStorage.setItem('selectedTab', this.selectedTab);
+        location.reload();
         this.loadPostsAdmin();
       },
       error: (err) => {
@@ -512,73 +529,78 @@ export class DashboardComponent implements OnInit {
   }
 
   // Método para deletar o item conforme seu tipo
-  deleteItemModal(): void {
-    if (this.currentId && this.itemType) {
-      let deleteObservable;
+ // ...
 
-      // Verifica o tipo do item e atribui o serviço correspondente
-      switch (this.itemType) {
-        case 'user':
-          deleteObservable = this.userService.deleteUser(this.currentId);
-          break;
-        case 'post':
-          deleteObservable = this.postService.deletePost(this.currentId);
-          break;
-        case 'category':
-          deleteObservable = this.categoryService.deleteCategory(
-            this.currentId
-          );
-          break;
-        case 'comment':
-          deleteObservable = this.commentService.deleteComment(this.currentId);
-          break;
-        default:
-          console.error('Tipo de item não reconhecido:', this.itemType);
-          return;
-      }
+// Método para deletar o item conforme seu tipo
+deleteItemModal(): void {
+  if (this.currentId && this.itemType) {
+    let deleteObservable;
 
-      // Executa o serviço de deleção e trata o resultado
-      deleteObservable.subscribe({
-        next: () => {
-          // Chama o método correto para recarregar a lista após a exclusão
-          switch (this.itemType) {
-            case 'user':
-              this.loadUsers();
-              break;
-            case 'post':
-              this.loadPostsAdmin();
-              break;
-            case 'category':
-              this.loadCategories();
-              break;
-            case 'comment':
-              this.loadComments();
-              break;
-          }
-
-          this.message = `${this.itemType} deletado com sucesso!`;
-          this.success = true;
-          this.closeModal(); // Fecha o modal após a deleção
-        },
-        error: (err) => {
-          console.error(`Erro ao deletar ${this.itemType}:`, err); // Exibe o erro detalhado no console
-          this.message = `Falha ao deletar ${this.itemType}.`;
-          this.success = false;
-        },
-        complete: () => {
-          setTimeout(() => {
-            this.message = ''; // Limpa a mensagem após um tempo
-          }, 2000);
-        },
-      });
-    } else {
-      console.error(
-        'ID ou tipo de item não são válidos:',
-        this.currentId,
-        this.itemType
-      );
+    // Verifica o tipo do item e atribui o serviço correspondente
+    switch (this.itemType) {
+      case 'user':
+        deleteObservable = this.userService.deleteUser(this.currentId);
+        break;
+      case 'post':
+        deleteObservable = this.postService.deletePost(this.currentId);
+        break;
+      case 'category':
+        deleteObservable = this.categoryService.deleteCategory(this.currentId);
+        break;
+      case 'comment':
+        deleteObservable = this.commentService.deleteComment(this.currentId);
+        break;
+      default:
+        console.error('Tipo de item não reconhecido:', this.itemType);
+        return;
     }
+
+    // Executa o serviço de deleção e trata o resultado
+    deleteObservable.subscribe({
+      next: () => {
+        console.log(`${this.itemType} deletado com sucesso!`);
+        this.message = `${this.itemType} deletado com sucesso!`;
+        this.success = true;
+
+        // Recarrega os dados da lista correspondente ao tipo do item
+        switch (this.itemType) {
+          case 'user':
+            this.loadUsers();
+            break;
+          case 'post':
+            this.loadPostsAdmin();
+            break;
+          case 'category':
+            this.loadCategories();
+            break;
+          case 'comment':
+            this.loadComments();
+            break;
+        }
+
+        this.closeModal(); // Fecha o modal após a deleção
+      },
+      error: (err) => {
+        console.error(`Erro ao deletar ${this.itemType}:`, err);
+        this.message = `Falha ao deletar ${this.itemType}.`;
+        this.success = false;
+      },
+      complete: () => {
+        localStorage.setItem('selectedTab', this.selectedTab);
+        location.reload();
+        setTimeout(() => {
+          this.message = ''; // Limpa a mensagem após um tempo
+        }, 500);
+      },
+    });
+  } else {
+    console.error(
+      'ID ou tipo de item não são válidos:',
+      this.currentId,
+      this.itemType
+    );
   }
+}
 
   // Método para carregar todos os dados
   loadAllData(): void {
