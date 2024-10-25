@@ -49,7 +49,7 @@ export class BlogEditComponent implements OnInit {
       '|',
       'undo',
       'redo',
-    ]
+    ],
   };
 
   constructor(
@@ -67,22 +67,30 @@ export class BlogEditComponent implements OnInit {
       user_id: 0,
       visibility: '',
       role: '',
-      likes: 0
+      likes: 0,
     };
   }
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      this.currentPostId = +params['postId'];
-      console.log('Post ID atual:', this.currentPostId);
+      const postIdParam = params['id'];
+      console.log('Post ID Param:', postIdParam); // Log do parâmetro do ID do post
 
-      // Chame loadCategories independentemente do postId
+      this.postId = +postIdParam; // Converter para número
+
+      if (isNaN(this.postId)) {
+        console.error('Post ID é inválido:', postIdParam); // Log de erro se o ID não for um número
+        return; // Não prosseguir se o ID for inválido
+      }
+
+      console.log('Post ID:', this.postId); // Log do ID do post após conversão
+      this.loadPost();
       this.loadCategories();
+      this.loadCategoriesByPostId(this.postId); // Carrega categorias específicas do post
     });
 
-    this.postId = +this.route.snapshot.paramMap.get('id')!;
-    this.loadPost();
     this.userId = this.authService.getLoggedUserId() ?? 0;
+    console.log('User ID:', this.userId); // Log do ID do usuário
   }
 
   loadPost(): void {
@@ -142,9 +150,49 @@ export class BlogEditComponent implements OnInit {
   loadCategories(): void {
     this.categoryService.getAllCategories().subscribe(
       (data: Category[]) => {
-        this.categories = data;
+        this.categories = data; // Carrega todas as categorias
+        console.log('All categories loaded:', this.categories);
+
+        // Após carregar todas as categorias, carrega as categorias específicas do post
+        if (this.currentPostId) {
+          this.loadCategoriesByPostId(this.currentPostId);
+        }
       },
+      (error) => {
+        console.error('Erro ao obter todas as categorias:', error);
+      }
     );
+  }
+
+
+  loadCategoriesByPostId(postId: number): void {
+    this.categoryService.getCategoriesByPostId(postId).subscribe(
+      (data: Category[]) => {
+        console.log('Categories loaded for Post:', data);
+
+        // Atualiza as IDs selecionadas com as categorias carregadas para o post
+        this.selectedCategoryIds = data.map(cat => cat.id!);
+        console.log('Selected Category IDs after loading categories:', this.selectedCategoryIds);
+      },
+      (error) => {
+        console.error('Erro ao obter categorias:', error);
+      }
+    );
+  }
+
+
+  onCategoryChange(event: Event, categoryId: number): void {
+    event.preventDefault();
+    const isChecked = this.selectedCategoryIds.includes(categoryId);
+    console.log('Category ID changed:', categoryId, 'Checked:', isChecked); // Log da alteração da categoria
+
+    if (isChecked) {
+      this.selectedCategoryIds = this.selectedCategoryIds.filter(id => id !== categoryId);
+    } else {
+      this.selectedCategoryIds.push(categoryId);
+    }
+
+    console.log('Updated Selected Category IDs:', this.selectedCategoryIds); // Log das IDs atualizadas
   }
 
   addCategory(): void {
@@ -159,8 +207,7 @@ export class BlogEditComponent implements OnInit {
           this.loadCategories();
           this.newCategoryName = '';
         },
-        error: (error) => {
-        },
+        error: (error) => {},
       });
     }
   }
@@ -212,19 +259,5 @@ export class BlogEditComponent implements OnInit {
   closeModal(): void {
     this.isModalOpen = false; // Fecha o modal
     this.currentCategoryId = null; // Limpa o ID atual
-  }
-
-  onCategoryChange(event: Event, categoryId: number): void {
-    event.preventDefault();
-
-    const isChecked = this.selectedCategoryIds.includes(categoryId);
-
-    if (isChecked) {
-      this.selectedCategoryIds = this.selectedCategoryIds.filter(
-        (id) => id !== categoryId
-      );
-    } else {
-      this.selectedCategoryIds.push(categoryId);
-    }
   }
 }

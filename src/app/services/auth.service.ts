@@ -12,7 +12,7 @@ export class AuthService {
   private baseUrl = 'https://blog-backend-production-c203.up.railway.app/api/auth';
 
   private userNameSubject = new BehaviorSubject<string | undefined>(
-    this.getUserName()
+    localStorage.getItem('userName') || undefined // Inicializa com o valor do localStorage
   );
 
   private currentUserIdSubject = new BehaviorSubject<number | null>(
@@ -29,7 +29,11 @@ export class AuthService {
   private profileImageUrlSubject = new BehaviorSubject<string | null>(null);
   profileImageUrl$ = this.profileImageUrlSubject.asObservable();
 
-  private userRoleSubject = new BehaviorSubject<string | null>(null);
+  private userRoleSubject = new BehaviorSubject<string>(''); // Valor inicial como string vazia
+  userRole$ = this.userRoleSubject.asObservable();
+
+  private userDetailsSubject = new BehaviorSubject<any>(null);
+  userDetails$ = this.userDetailsSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -41,6 +45,21 @@ export class AuthService {
     if (savedRole) {
       this.userRoleSubject.next(savedRole);
     }
+
+    const storedRole = localStorage.getItem('userRole') || ''; // Usando uma string vazia como fallback
+    this.userRoleSubject.next(storedRole); // Inicializa com o valor armazenado no localStorage
+  }
+
+  setUserRole(role: string) {
+    this.userRoleSubject.next(role);
+  }
+
+  setUserDetails(details: any) {
+    this.userDetailsSubject.next(details);
+  }
+
+  resetUserRole(): void {
+    this.userRoleSubject.next(''); // Reseta o papel do usuário
   }
 
   login(email: string, password: string) {
@@ -61,7 +80,7 @@ export class AuthService {
           if (profilePicUrl) {
             profilePicUrl = profilePicUrl.replace(/\\/g, '/');
             if (!profilePicUrl.startsWith('http')) {
-              profilePicUrl = `https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/${profilePicUrl}`;
+              profilePicUrl = `https://blog-backend-production-c203.up.railway.app/${profilePicUrl}`;
             }
             localStorage.setItem('profilePicture', profilePicUrl);
           } else {
@@ -88,7 +107,6 @@ export class AuthService {
       );
   }
 
-
   updateProfileImageUrl(url: string): void {
     localStorage.setItem('profilePicture', url);
     this.profileImageUrlSubject.next(url);
@@ -113,14 +131,11 @@ export class AuthService {
     return this.userRoleSubject.asObservable();
   }
 
-  // Função para atualizar a role do usuário
-  setUserRole(role: string) {
-    this.userRoleSubject.next(role);
-    localStorage.setItem('userRole', role); // Armazenar no localStorage para persistência
-  }
-
   getUserName(): string {
-    return localStorage.getItem('username') || 'Visitor';
+    // Obtém o valor atual do BehaviorSubject. Se for indefinido, retorna 'Visitor'.
+    const username = this.userNameSubject.value || 'Visitor';
+    console.log(`Username retrieved: ${username}`); // Log para verificar o nome do usuário
+    return username; // Retorna o nome do usuário
   }
 
   getUserId(): number | null {
@@ -160,9 +175,9 @@ export class AuthService {
     this.userLoggedInSubject.next(false);
     this.userNameSubject.next(undefined);
     this.currentUserIdSubject.next(null); // Limpando o ID do usuário
-
     this.profileImageUrlSubject.next(null);
     this.imageService.clearProfilePic(); // Notificar o UserService sobre a remoção da imagem
+    this.userRoleSubject.next('user'); // Método para resetar o papel
 
     // Redirecionando para a página de login após o logout
     this.router.navigate(['/login']);

@@ -5,7 +5,6 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class ImageService {
-  private serverUrl: string = 'https://blog-backend-production-c203.up.railway.app'; // Substitua pela URL do seu servidor Node.js
   private profilePicSubject = new BehaviorSubject<string | null>(null);
   profilePic$ = this.profilePicSubject.asObservable();
 
@@ -51,7 +50,7 @@ export class ImageService {
     picUrl = picUrl.replace(/\\/g, '/');
     return picUrl.startsWith('http')
       ? picUrl
-      : `https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/${picUrl}`;
+      : `http://localhost:4200/${picUrl}`;
   }
 
   clearProfilePic(): void {

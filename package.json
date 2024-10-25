@@ -6,8 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "install:prod": "npm install --omit=dev"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
@@ -21,12 +20,10 @@
     "@angular/router": "^17.3.0",
     "@ckeditor/ckeditor5-angular": "^9.0.0",
     "@ckeditor/ckeditor5-build-classic": "^43.2.0",
-    "@ckeditor/ckeditor5-image": "^43.2.0",
-    "@ckeditor/ckeditor5-special-characters": "^43.2.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@phudak/ckeditor5-emoji": "^1.1.1",
     "bootstrap": "^5.3.3",
     "file-saver": "^2.0.5",
-    "jquery": "^3.7.1",
     "rxjs": "~7.8.0",
     "socket.io-client": "^4.8.0",
     "tslib": "^2.3.0",

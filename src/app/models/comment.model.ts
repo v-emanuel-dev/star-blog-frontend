@@ -1,9 +1,9 @@
-// comment.model.ts
 export interface Comment {
-  id?: number; // Adicione esta linha para incluir o ID do comentário
+  id?: number; // ID do comentário
   postId: number; // ID do post ao qual o comentário pertence
   userId: number | null; // Permite que userId seja null
+  username: string; // Adiciona o username
   content: string; // Conteúdo do comentário
   visibility: string; // Adicionando a visibilidade
-  created_at: string; // Adicione essa linha
+  created_at: string; // Data de criação do comentário
 }

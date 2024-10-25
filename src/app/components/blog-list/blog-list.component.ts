@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { saveAs } from 'file-saver';
 import { Post } from '../../models/post.model';
 import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
 import { CategoryService } from '../../services/category.service';
-import { catchError, forkJoin, of } from 'rxjs';
+import { catchError, forkJoin, of, Subscription } from 'rxjs';
 import { UserService } from '../../services/user.service';
+import { Category } from '../../models/category.model';
 
 @Component({
   selector: 'app-blog-list',
@@ -15,6 +16,7 @@ import { UserService } from '../../services/user.service';
 })
 export class BlogListComponent implements OnInit {
   posts: Post[] = []; // Todos os posts
+  categories: Category[] = []; // Definindo a propriedade categories
   postId: number = 0;
   filteredPosts: Post[] = []; // Posts filtrados pela busca
   searchTerm: string = ''; // Termo de busca
@@ -26,6 +28,10 @@ export class BlogListComponent implements OnInit {
   currentPostId: number | null = null;
   message: string | null = null; // Mensagem a ser exibida
   isLoadingCategories: boolean = true;
+  isAdmin: boolean = false; // Adicione esta variável
+  userRole: string | null = null; // Propriedade para armazenar o papel do usuário
+
+  private roleSubscription: Subscription = new Subscription();
 
   constructor(
     private postService: PostService,
@@ -33,23 +39,27 @@ export class BlogListComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private categoryService: CategoryService,
-    private userService: UserService
+    private userService: UserService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+
+    this.roleSubscription = this.authService.userRole$.subscribe((role) => {
+      this.userRole = role;
+      this.cd.detectChanges(); // Força a atualização da view
+    });
+
     this.route.queryParams.subscribe((params) => {
       const profileImageUrl = params['profileImage'];
 
       if (profileImageUrl) {
         this.userService.updateProfilePicture(profileImageUrl);
-        console.log(
-          'Profile image updated after Google login:',
-          profileImageUrl
-        );
       }
     });
-    this.loadPostsAndCategories();
+
     this.getPosts(); // Carrega os posts na inicialização
+
     this.isLoggedIn = this.authService.isLoggedIn();
 
     // Verifica se há mensagens de erro nos parâmetros de consulta
@@ -63,105 +73,75 @@ export class BlogListComponent implements OnInit {
 
   toggleLike(postId: number): void {
     this.postService.toggleLike(postId).subscribe(
-      response => {
+      (response) => {
         console.log(response);
         // Aqui, você deve atualizar a contagem de likes do post
-        const post = this.posts.find(p => p.id === postId);
+        const post = this.posts.find((p) => p.id === postId);
         if (post) {
           post.likes = post.likes ? post.likes + 1 : 1; // Incrementa ou inicializa o número de likes
         }
       },
-      error => {
-        console.error('Error liking/disliking post:', error);
+      (error) => {
+        console.error('Erro ao curtir/descurtir post:', error);
       }
     );
   }
 
-  loadPostsAndCategories(): void {
-    this.isLoadingCategories = true;
-
-    this.postService.getPosts().subscribe({
-      next: (posts) => {
-        this.posts = posts;
-
-        // Cria uma lista de observables para buscar as categorias de cada post
-        const categoryRequests = this.posts.map((post) => {
-          if (post.id !== undefined) {
-            return this.categoryService.getCategoriesByPostId(post.id).pipe(
-              catchError((error) => {
-                console.error(
-                  `Error loading post categories ${post.id}:`,
-                  error
-                );
-                return of([]); // Retorna um array vazio em caso de erro
-              })
-            );
-          } else {
-            return of([]);
-          }
-        });
-
-        // Usa forkJoin para esperar todas as requisições de categorias
-        forkJoin(categoryRequests).subscribe({
-          next: (categoriesArray) => {
-            categoriesArray.forEach((categories, index) => {
-              this.posts[index].categories = categories;
-            });
-            this.isLoadingCategories = false;
-            this.updatePostsTitle(); // Atualiza o título após carregar categorias
-          },
-          error: (error) => {
-            console.error('Erro ao carregar as categorias:', error);
-            this.isLoadingCategories = false;
-          },
-        });
+  loadCategories(postId: number): void {
+    this.categoryService.getCategoriesByPostId(postId).subscribe(
+      (data: Category[]) => {
+        // Encontre o post correspondente e atualize suas categorias
+        const post = this.posts.find((p) => p.id === postId);
+        if (post) {
+          post.categories = data;
+        }
       },
-      error: (error) => {
-        console.error('Erro ao carregar os posts:', error);
-        this.isLoadingCategories = false;
-      },
-    });
+      (error) => {
+        console.error('Erro ao obter categorias:', error);
+      }
+    );
   }
 
   getPosts(): void {
     this.loading = true;
 
-    // Inscreva-se no Observable para obter o papel do usuário
     this.authService.getUserRole().subscribe(
       (userRole) => {
-        const isAdmin = userRole === 'admin'; // Verifica se o papel é admin
-
-        // Se for admin, carrega todos os posts usando getPostsAdmin
+        const isAdmin = userRole === 'admin';
         const postsObservable = isAdmin
           ? this.postService.getPostsAdmin()
           : this.postService.getPosts();
 
         postsObservable.subscribe({
           next: (data: Post[]) => {
-            this.posts = data; // Atribui posts à variável posts
-            console.log("Data:", data);
+            this.posts = data;
             this.filteredPosts = this.isLoggedIn
               ? this.posts
               : this.posts.filter((post) => post.visibility === 'public');
             this.updatePostsTitle();
-            this.loading = false; // Para parar o loading
+            this.loading = false;
+
+            // Carrega as categorias para cada post, verificando se o ID é válido
+            this.posts.forEach((post) => {
+              if (post.id !== undefined) {
+                this.loadCategories(post.id);
+              } else {
+                console.error('Post ID é undefined:', post);
+              }
+            });
           },
           error: (error) => {
-            console.error('Error fetching posts:', error);
-            this.loading = false; // Para parar o loading em caso de erro
+            console.error('Erro ao obter posts:', error);
+            this.loading = false;
           },
         });
-
-        // Define o título para admins
-        this.postsTitle = isAdmin ? 'All Posts' : this.postsTitle;
       },
       (error) => {
         console.error('Error fetching user role:', error);
-        this.loading = false; // Para parar o loading em caso de erro ao buscar o papel do usuário
+        this.loading = false;
       }
     );
   }
-
 
   filterPosts(): void {
     const searchTermLower = this.searchTerm.toLowerCase().trim();
@@ -208,12 +188,12 @@ export class BlogListComponent implements OnInit {
     this.postService.deletePost(postId).subscribe({
       next: () => {
         this.getPosts(); // Atualiza a lista de posts após a exclusão
-        this.message = 'Post deleted successfully!';
+        this.message = 'Post deletado com sucesso!';
         this.success = true;
       },
       error: (err) => {
-        console.error('Error deleting post:', err); // Exibe o erro detalhado no console
-        this.message = 'Failed to delete post.';
+        console.error('Erro ao deletar post:', err); // Exibe o erro detalhado no console
+        this.message = 'Falha ao deletar o post.';
         this.success = false;
       },
       complete: () => {
@@ -228,7 +208,7 @@ export class BlogListComponent implements OnInit {
     const content = `Título: ${post.title}\n\nConteúdo:\n${post.content}`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, `${post.title}.txt`);
-    this.message = 'Text exported successfully!';
+    this.message = 'Texto exportado com sucesso!';
     this.success = true;
     setTimeout(() => {
       this.message = '';
@@ -258,13 +238,13 @@ export class BlogListComponent implements OnInit {
       this.postService.deletePost(postId).subscribe({
         next: () => {
           this.getPosts(); // Atualiza a lista de posts após a exclusão
-          this.message = 'Post deleted successfully!';
+          this.message = 'Post deletado com sucesso!';
           this.success = true;
           this.closeModal(); // Fecha o modal após a deleção
         },
         error: (err) => {
-          console.error('Error deleting post:', err); // Exibe o erro detalhado no console
-          this.message = 'Failed to delete post.';
+          console.error('Erro ao deletar post:', err); // Exibe o erro detalhado no console
+          this.message = 'Falha ao deletar o post.';
           this.success = false;
         },
         complete: () => {
@@ -274,7 +254,7 @@ export class BlogListComponent implements OnInit {
         },
       });
     } else {
-      console.error('Post ID is not valid:', postId);
+      console.error('ID do post não é válido:', postId);
     }
   }
 }
