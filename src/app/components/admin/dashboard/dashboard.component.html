@@ -365,8 +365,8 @@
           class="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
           required
         >
-          <option value="" disabled selected>Select a post</option>
-          <option *ngFor="let post of posts$ | async" [value]="post.id">
+        <option [ngValue]="null" disabled selected>Select a post</option>
+        <option *ngFor="let post of posts$ | async" [value]="post.id">
             {{ post.title }}
           </option>
         </select>
