@@ -46,6 +46,8 @@ export class DashboardComponent implements OnInit {
   categories$: Observable<Category[]>;
   comments$: Observable<Comment[]>;
   selectedTab: string;
+  selectedPost: string | null = ''; // Inicializa como string vazia
+
   public Editor = ClassicEditor.default; // Use a propriedade .default aqui
   public editorConfig = {
     toolbar: [
@@ -87,6 +89,11 @@ export class DashboardComponent implements OnInit {
     if (savedTab) {
       this.selectedTab = savedTab; // Define a aba selecionada com base no valor armazenado
     }
+    this.resetSelection(); // Força a seleção da opção "Select a post"
+  }
+
+  resetSelection() {
+    this.selectedPost = ''; // Reseta a seleção
   }
 
   selectTab(tab: string): void {
@@ -511,76 +518,78 @@ export class DashboardComponent implements OnInit {
   }
 
   // Método para deletar o item conforme seu tipo
- // ...
+  // ...
 
-// Método para deletar o item conforme seu tipo
-deleteItemModal(): void {
-  if (this.currentId && this.itemType) {
-    let deleteObservable;
+  // Método para deletar o item conforme seu tipo
+  deleteItemModal(): void {
+    if (this.currentId && this.itemType) {
+      let deleteObservable;
 
-    // Verifica o tipo do item e atribui o serviço correspondente
-    switch (this.itemType) {
-      case 'user':
-        deleteObservable = this.userService.deleteUser(this.currentId);
-        break;
-      case 'post':
-        deleteObservable = this.postService.deletePost(this.currentId);
-        break;
-      case 'category':
-        deleteObservable = this.categoryService.deleteCategory(this.currentId);
-        break;
-      case 'comment':
-        deleteObservable = this.commentService.deleteComment(this.currentId);
-        break;
-      default:
-        console.error('Tipo de item não reconhecido:', this.itemType);
-        return;
+      // Verifica o tipo do item e atribui o serviço correspondente
+      switch (this.itemType) {
+        case 'user':
+          deleteObservable = this.userService.deleteUser(this.currentId);
+          break;
+        case 'post':
+          deleteObservable = this.postService.deletePost(this.currentId);
+          break;
+        case 'category':
+          deleteObservable = this.categoryService.deleteCategory(
+            this.currentId
+          );
+          break;
+        case 'comment':
+          deleteObservable = this.commentService.deleteComment(this.currentId);
+          break;
+        default:
+          console.error('Tipo de item não reconhecido:', this.itemType);
+          return;
+      }
+
+      // Executa o serviço de deleção e trata o resultado
+      deleteObservable.subscribe({
+        next: () => {
+          console.log(`${this.itemType} deletado com sucesso!`);
+          this.message = `${this.itemType} deletado com sucesso!`;
+          this.success = true;
+
+          // Recarrega os dados da lista correspondente ao tipo do item
+          switch (this.itemType) {
+            case 'user':
+              this.loadUsers();
+              break;
+            case 'post':
+              this.loadPostsAdmin();
+              break;
+            case 'category':
+              this.loadCategories();
+              break;
+            case 'comment':
+              this.loadComments();
+              break;
+          }
+
+          this.closeModal(); // Fecha o modal após a deleção
+        },
+        error: (err) => {
+          console.error(`Erro ao deletar ${this.itemType}:`, err);
+          this.message = `Falha ao deletar ${this.itemType}.`;
+          this.success = false;
+        },
+        complete: () => {
+          setTimeout(() => {
+            this.message = ''; // Limpa a mensagem após um tempo
+          }, 2000);
+        },
+      });
+    } else {
+      console.error(
+        'ID ou tipo de item não são válidos:',
+        this.currentId,
+        this.itemType
+      );
     }
-
-    // Executa o serviço de deleção e trata o resultado
-    deleteObservable.subscribe({
-      next: () => {
-        console.log(`${this.itemType} deletado com sucesso!`);
-        this.message = `${this.itemType} deletado com sucesso!`;
-        this.success = true;
-
-        // Recarrega os dados da lista correspondente ao tipo do item
-        switch (this.itemType) {
-          case 'user':
-            this.loadUsers();
-            break;
-          case 'post':
-            this.loadPostsAdmin();
-            break;
-          case 'category':
-            this.loadCategories();
-            break;
-          case 'comment':
-            this.loadComments();
-            break;
-        }
-
-        this.closeModal(); // Fecha o modal após a deleção
-      },
-      error: (err) => {
-        console.error(`Erro ao deletar ${this.itemType}:`, err);
-        this.message = `Falha ao deletar ${this.itemType}.`;
-        this.success = false;
-      },
-      complete: () => {
-        setTimeout(() => {
-          this.message = ''; // Limpa a mensagem após um tempo
-        }, 2000);
-      },
-    });
-  } else {
-    console.error(
-      'ID ou tipo de item não são válidos:',
-      this.currentId,
-      this.itemType
-    );
   }
-}
 
   loadAllData(): void {
     this.loadUsers();
@@ -588,5 +597,4 @@ deleteItemModal(): void {
     this.loadCategories();
     this.loadComments();
   }
-
 }

@@ -1,0 +1,25 @@
+body {
+  background-color: #f7fafc; /* Cor de fundo suave */
+  font-family: 'Arial', sans-serif; /* Tipografia limpa */
+}
+
+h2 {
+  color: #4a5568; /* Título com cor mais escura */
+}
+
+input, textarea, select {
+  transition: border-color 0.2s, box-shadow 0.2s; /* Suaviza a transição de estilos */
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #3182ce; /* Cor da borda ao focar */
+  box-shadow: 0 0 5px rgba(50, 130, 206, 0.5); /* Sombra ao focar */
+}
+
+button {
+  transition: background-color 0.2s, transform 0.2s; /* Suaviza a transição de botões */
+}
+
+button:hover {
+  transform: translateY(-2px); /* Eleva o botão ao passar o mouse */
+}

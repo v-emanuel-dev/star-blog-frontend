@@ -65,13 +65,18 @@
     </button>
   </div>
   <div class="mb-4">
-    <input
-      type="text"
-      class="form-control w-full shadow-sm p-3 bg-transparent text-gray-800 rounded border border-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
-      placeholder="Search posts"
-      [(ngModel)]="searchTerm"
-      (input)="filterPosts()"
-    />
+    <div class="relative w-full">
+      <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+        <i class="fas fa-search text-gray-400"></i>
+      </div>
+      <input
+        type="text"
+        class="w-full pl-10 pr-3 py-3 bg-transparent text-gray-800 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent shadow-sm"
+        placeholder="Search"
+        [(ngModel)]="searchTerm"
+        (input)="filterPosts()"
+      />
+    </div>
     <div
       *ngIf="searchTerm && filteredPosts.length === 0"
       class="alert alert-warning text-center mt-2"

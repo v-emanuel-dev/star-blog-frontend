@@ -112,7 +112,7 @@
       <select
         [(ngModel)]="selectedTab"
         (change)="onTabChange($event)"
-        class="w-full border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
       >
         <option value="users">Users</option>
         <option value="posts">Posts</option>
@@ -123,40 +123,40 @@
   </div>
 
   <ng-container *ngIf="selectedTab === 'users'">
-    <h2 class="text-xl font-semibold mb-4 mt-6 text-gray-800">Users</h2>
+    <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Users</h2>
 
     <!-- Botão para criar um novo usuário -->
-    <div class="mb-4">
+    <div class="mb-6">
       <button
         routerLink="/register"
-        class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+        class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-200"
       >
         Create new user
       </button>
     </div>
 
-    <ul class="space-y-3">
+    <ul class="space-y-4">
       <li
         *ngFor="let user of users$ | async"
-        class="flex flex-col md:flex-row justify-between items-center p-3 bg-gray-50 rounded-md shadow-sm hover:shadow-md transition-shadow duration-150"
+        class="flex flex-col md:flex-row justify-between items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-150"
       >
         <div
           *ngIf="editingUser?.id !== user.id"
           class="flex justify-between items-center w-full"
         >
-          <span class="text-lg text-gray-800 truncate md:w-2/3"
-            >{{ user.username }} - {{ user.email }} - {{ user.role }}</span
-          >
+          <span class="text-lg text-gray-800 truncate md:w-2/3">
+            {{ user.username }} - {{ user.email }} - {{ user.role }}
+          </span>
           <div class="flex space-x-2">
             <button
               (click)="startEditUser(user)"
-              class="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 transition duration-300"
+              class="bg-yellow-500 text-white py-1 px-3 rounded-lg hover:bg-yellow-400 transition duration-300"
             >
               <i class="fa-solid fa-pen"></i>
             </button>
             <button
               (click)="openModal(user.id, 'user')"
-              class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition duration-300"
+              class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-400 transition duration-300"
             >
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -166,16 +166,16 @@
           <input
             [(ngModel)]="editingUser.username"
             placeholder="Username"
-            class="border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            class="border border-gray-300 rounded-lg p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           />
           <input
             [(ngModel)]="editingUser.email"
             placeholder="Email"
-            class="border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            class="border border-gray-300 rounded-lg p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           />
           <select
             [(ngModel)]="editingUser.role"
-            class="border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            class="border border-gray-300 rounded-lg p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           >
             <option value="user">User</option>
             <option value="admin">Admin</option>
@@ -183,13 +183,13 @@
           <div class="flex space-x-2">
             <button
               (click)="saveEditUser()"
-              class="bg-green-500 text-white py-1 px-2 rounded-md hover:bg-green-400 transition duration-200 shadow-sm"
+              class="bg-green-500 text-white py-1 px-4 rounded-lg hover:bg-green-400 transition duration-200"
             >
               Save
             </button>
             <button
               (click)="cancelEditUser()"
-              class="bg-gray-300 text-gray-800 py-1 px-2 rounded-md hover:bg-gray-400 transition duration-200 shadow-sm"
+              class="bg-gray-300 text-gray-800 py-1 px-4 rounded-lg hover:bg-gray-200 transition duration-200"
             >
               Cancel
             </button>
@@ -201,19 +201,19 @@
 
   <!-- Posts Section -->
   <ng-container *ngIf="selectedTab === 'posts'">
-    <h2 class="text-xl font-semibold mb-4 mt-6 text-gray-800">Posts</h2>
-    <div class="mb-4">
+    <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Posts</h2>
+    <div class="mb-6">
       <button
         routerLink="/blog/create"
-        class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+        class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-200"
       >
         Create new post
       </button>
     </div>
-    <ul class="space-y-3">
+    <ul class="space-y-4">
       <li
         *ngFor="let post of posts$ | async"
-        class="flex flex-col md:flex-row justify-between items-center p-3 bg-gray-50 rounded-md shadow-sm hover:shadow-md transition-shadow duration-150"
+        class="flex flex-col md:flex-row justify-between items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-150"
       >
         <div
           *ngIf="editingPost?.id !== post.id"
@@ -229,13 +229,13 @@
           <div class="flex space-x-2">
             <button
               (click)="startEditPost(post)"
-              class="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 transition duration-300"
+              class="bg-yellow-500 text-white py-1 px-3 rounded-lg hover:bg-yellow-400 transition duration-300"
             >
               <i class="fa-solid fa-pen"></i>
             </button>
             <button
               (click)="openModal(post.id!, 'post')"
-              class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition duration-300"
+              class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-400 transition duration-300"
             >
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -245,7 +245,7 @@
           <input
             [(ngModel)]="editingPost.title"
             placeholder="Title"
-            class="border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            class="border border-gray-300 rounded-lg p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           />
           <ckeditor
             [(ngModel)]="editingPost.content"
@@ -253,19 +253,18 @@
             [editor]="Editor"
             [config]="editorConfig"
             (ready)="onReady($event)"
-            class="custom-editor"
-            class="border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-          />
+            class="border border-gray-300 rounded-lg p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+          ></ckeditor>
           <div class="flex space-x-2">
             <button
               (click)="saveEditPost()"
-              class="bg-green-500 text-white py-1 px-2 rounded-md hover:bg-green-400 transition duration-200 shadow-sm"
+              class="bg-green-500 text-white py-1 px-4 rounded-lg hover:bg-green-400 transition duration-200"
             >
               Save
             </button>
             <button
               (click)="cancelEditPost()"
-              class="bg-gray-300 text-gray-800 py-1 px-2 rounded-md hover:bg-gray-400 transition duration-200 shadow-sm"
+              class="bg-gray-300 text-gray-800 py-1 px-4 rounded-lg hover:bg-gray-200 transition duration-200"
             >
               Cancel
             </button>
@@ -277,31 +276,31 @@
 
   <!-- Categories Section -->
   <ng-container *ngIf="selectedTab === 'categories'">
-    <h2 class="text-xl font-semibold mb-4 mt-6 text-gray-800">Categories</h2>
-    <div class="mb-4">
+    <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Categories</h2>
+    <div class="mb-6">
       <form (submit)="addCategory()" class="mt-4">
-        <div class="mb-3">
+        <div class="mb-4">
           <input
             type="text"
             [(ngModel)]="newCategoryName"
             name="newCategoryName"
             placeholder="New category"
             required
-            class="form-control"
+            class="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <button
           type="submit"
-          class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+          class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-200"
         >
           Create new category
         </button>
       </form>
     </div>
-    <ul class="space-y-3">
+    <ul class="space-y-4">
       <li
         *ngFor="let category of categories$ | async"
-        class="mx-2 flex flex-col md:flex-row justify-between items-center p-3 bg-gray-50 rounded-md shadow-sm hover:shadow-md transition-shadow duration-150"
+        class="mx-2 flex flex-col md:flex-row justify-between items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-150"
       >
         <div
           *ngIf="editingCategory?.id !== category.id"
@@ -313,13 +312,13 @@
           <div class="flex space-x-2">
             <button
               (click)="startEditCategory(category)"
-              class="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 transition duration-300"
+              class="bg-yellow-500 text-white py-1 px-3 rounded-lg hover:bg-yellow-400 transition duration-300"
             >
               <i class="fa-solid fa-pen"></i>
             </button>
             <button
               (click)="openModal(category.id!, 'category')"
-              class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition duration-300"
+              class="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-400 transition duration-300"
             >
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -332,18 +331,18 @@
           <input
             [(ngModel)]="editingCategory.name"
             placeholder="Name"
-            class="border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            class="border border-gray-300 rounded-lg p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           />
           <div class="flex space-x-2">
             <button
               (click)="saveEditCategory()"
-              class="bg-green-500 text-white py-1 px-2 rounded-md hover:bg-green-400 transition duration-200 shadow-sm"
+              class="bg-green-500 text-white py-1 px-4 rounded-lg hover:bg-green-400 transition duration-200"
             >
               Save
             </button>
             <button
               (click)="cancelEditCategory()"
-              class="bg-gray-300 text-gray-800 py-1 px-2 rounded-md hover:bg-gray-400 transition duration-200 shadow-sm"
+              class="bg-gray-300 text-gray-800 py-1 px-4 rounded-lg hover:bg-gray-200 transition duration-200"
             >
               Cancel
             </button>
@@ -355,45 +354,47 @@
 
   <!-- Comments Section -->
   <ng-container *ngIf="selectedTab === 'comments'">
-    <h2 class="text-xl font-semibold mb-4 mt-6 text-gray-800">Comments</h2>
-    <div class="bg-white shadow-md rounded-lg mb-6">
-      <div class="px-4 py-3 border-b">
-        <h3 class="text-lg font-semibold">Create new comment</h3>
-      </div>
-      <div class="px-4 py-3">
-        <textarea
-          [(ngModel)]="newComment"
-          placeholder="Write your comment here..."
-          class="form-control mb-4"
-        ></textarea>
+    <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Comments</h2>
+
+    <!-- Formulário para adicionar um novo comentário -->
+    <div class="mb-6">
+      <form (submit)="addComment()" class="mt-4">
+        <select
+          [(ngModel)]="selectedPost"
+          name="post"
+          class="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+          required
+        >
+          <option value="" disabled selected>Select a post</option>
+          <option *ngFor="let post of posts$ | async" [value]="post.id">
+            {{ post.title }}
+          </option>
+        </select>
 
         <div class="mb-4">
-          <label for="postSelect" class="form-label">Select a post</label>
-          <select
-            id="postSelect"
-            [(ngModel)]="selectedPostId"
-            class="form-select"
-            aria-label="Selecionar um post"
-          >
-            <option disabled selected value="">Selecione um post</option>
-            <option *ngFor="let post of posts$ | async" [value]="post.id">
-              {{ post.title }}
-            </option>
-          </select>
+          <textarea
+            [(ngModel)]="newComment"
+            name="newComment"
+            rows="4"
+            placeholder="Your comment"
+            required
+            class="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
         </div>
-
         <button
-          (click)="addComment()"
-          class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+          type="submit"
+          class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-200"
         >
           Add Comment
         </button>
-      </div>
+      </form>
     </div>
-    <ul class="space-y-3">
+
+    <!-- Lista de comentários -->
+    <ul class="space-y-4">
       <li
         *ngFor="let comment of comments$ | async"
-        class="mx-2 flex flex-col md:flex-row justify-between items-center p-3 bg-gray-50 rounded-md shadow-sm hover:shadow-md transition-shadow duration-150"
+        class="flex flex-col md:flex-row justify-between items-center p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-150"
       >
         <div
           *ngIf="editingComment?.id !== comment.id"
@@ -405,13 +406,13 @@
           <div class="flex space-x-2">
             <button
               (click)="startEditComment(comment)"
-              class="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 transition duration-300"
+              class="bg-yellow-500 text-white py-1 px-4 rounded-lg hover:bg-yellow-400 transition duration-300"
             >
               <i class="fa-solid fa-pen"></i>
             </button>
             <button
               (click)="openModal(comment.id!, 'comment')"
-              class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition duration-300"
+              class="bg-red-600 text-white py-1 px-4 rounded-lg hover:bg-red-500 transition duration-300"
             >
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -424,18 +425,18 @@
           <input
             [(ngModel)]="editingComment.content"
             placeholder="Content"
-            class="border border-gray-300 rounded-md p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            class="border border-gray-300 rounded-lg p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-600 w-full"
           />
           <div class="flex space-x-2">
             <button
               (click)="saveEditComment()"
-              class="bg-green-500 text-white py-1 px-2 rounded-md hover:bg-green-400 transition duration-200 shadow-sm"
+              class="bg-green-600 text-white py-1 px-4 rounded-lg hover:bg-green-500 transition duration-200"
             >
               Save
             </button>
             <button
               (click)="cancelEditComment()"
-              class="bg-gray-300 text-gray-800 py-1 px-2 rounded-md hover:bg-gray-400 transition duration-200 shadow-sm"
+              class="bg-gray-300 text-gray-800 py-1 px-4 rounded-lg hover:bg-gray-200 transition duration-200"
             >
               Cancel
             </button>
