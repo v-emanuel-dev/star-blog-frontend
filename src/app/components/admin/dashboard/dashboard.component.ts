@@ -198,8 +198,6 @@ export class DashboardComponent implements OnInit {
             this.message = 'User updated successfully!';
             this.success = true;
             this.editingUser = null;
-            localStorage.setItem('selectedTab', this.selectedTab);
-            location.reload();
           },
           error: (error) => {
             console.error('Error updating user:', error);
@@ -227,8 +225,6 @@ export class DashboardComponent implements OnInit {
         console.log('User deleted successfully:', response);
         this.message = 'User deleted successfully!';
         this.success = true;
-        localStorage.setItem('selectedTab', this.selectedTab);
-        location.reload();
         this.loadUsers();
       },
       error: (err) => {
@@ -259,9 +255,6 @@ export class DashboardComponent implements OnInit {
             console.log('Category updated successfully:', this.editingCategory);
             this.message = 'Category updated successfully!';
             this.success = true;
-            localStorage.setItem('selectedTab', this.selectedTab);
-            localStorage.setItem('selectedTab', this.selectedTab);
-            location.reload();
             this.loadCategories();
             this.editingCategory = null;
           },
@@ -321,8 +314,6 @@ export class DashboardComponent implements OnInit {
         console.log('Category deleted successfully:', response);
         this.message = 'Category deleted successfully!';
         this.success = true;
-        localStorage.setItem('selectedTab', this.selectedTab);
-        location.reload();
         this.loadCategories();
       },
       error: (err) => {
@@ -353,8 +344,6 @@ export class DashboardComponent implements OnInit {
             console.log('Comment updated successfully:', this.editingComment);
             this.message = 'Comment updated successfully!';
             this.success = true;
-            localStorage.setItem('selectedTab', this.selectedTab);
-            location.reload();
             this.loadComments();
             this.editingComment = null;
           },
@@ -394,8 +383,7 @@ export class DashboardComponent implements OnInit {
       this.commentService.addComment(comment).subscribe(
         () => {
           console.log('Comentário enviado ao backend');
-          localStorage.setItem('selectedTab', this.selectedTab);
-          location.reload();
+          this.newComment = '';
           this.loadComments(); // Método para carregar os comentários do post
         },
         (error) => {
@@ -422,8 +410,6 @@ export class DashboardComponent implements OnInit {
         console.log('Comment deleted successfully:', response);
         this.message = 'Comment deleted successfully!';
         this.success = true;
-        localStorage.setItem('selectedTab', this.selectedTab);
-        location.reload();
         this.loadComments();
       },
       error: (err) => {
@@ -456,8 +442,6 @@ export class DashboardComponent implements OnInit {
             this.message = 'Post updated successfully!';
             this.success = true;
             this.editingPost = null;
-            localStorage.setItem('selectedTab', this.selectedTab);
-            location.reload();
             this.loadPostsAdmin();
           },
           error: (error) => {
@@ -487,8 +471,6 @@ export class DashboardComponent implements OnInit {
         this.message = 'Post deleted successfully!';
         this.success = true;
         this.editingPost = null;
-        localStorage.setItem('selectedTab', this.selectedTab);
-        location.reload();
         this.loadPostsAdmin();
       },
       error: (err) => {
@@ -586,11 +568,9 @@ deleteItemModal(): void {
         this.success = false;
       },
       complete: () => {
-        localStorage.setItem('selectedTab', this.selectedTab);
-        location.reload();
         setTimeout(() => {
           this.message = ''; // Limpa a mensagem após um tempo
-        }, 500);
+        }, 2000);
       },
     });
   } else {
@@ -602,29 +582,11 @@ deleteItemModal(): void {
   }
 }
 
-  // Método para carregar todos os dados
   loadAllData(): void {
-    this.loading = true; // Inicia o carregamento
-    forkJoin({
-      users: this.userService.getUsers(),
-      posts: this.postService.getPostsAdminDashboard(),
-      categories: this.categoryService.getAllCategories(),
-      comments: this.commentService.getAllComments()
-    }).subscribe({
-      next: (data) => {
-        this.users$ = of(data.users);
-        this.posts$ = of(data.posts);
-        this.categories$ = of(data.categories);
-        this.comments$ = of(data.comments);
-      },
-      error: (error) => {
-        console.error('Erro ao carregar dados:', error);
-        this.loading = false; // Finaliza o carregamento
-      },
-      complete: () => {
-        this.loading = false; // Finaliza o carregamento
-      }
-    });
+    this.loadUsers();
+    this.loadPostsAdmin();
+    this.loadCategories();
+    this.loadComments();
   }
 
 }
