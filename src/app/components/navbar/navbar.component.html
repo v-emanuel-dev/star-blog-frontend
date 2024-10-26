@@ -55,33 +55,36 @@
           <div class="flex space-x-4">
             <a
               *ngIf="isAdmin()"
-              class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
-              aria-current="page"
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/admin"
+              routerLinkActive="bg-gray-900 text-white"
               >Dashboard</a
             >
             <a
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/blog"
+              routerLinkActive="bg-gray-900 text-white"
               >Blog</a
             >
             <a
               *ngIf="!isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/login"
+              routerLinkActive="bg-gray-900 text-white"
               >Sign in</a
             >
             <a
               *ngIf="!isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/register"
+              routerLinkActive="bg-gray-900 text-white"
               >Sign up</a
             >
             <a
               *ngIf="isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-              aria-current="page"
               routerLink="/user"
+              routerLinkActive="bg-gray-900 text-white"
               >User Profile</a
             >
 
