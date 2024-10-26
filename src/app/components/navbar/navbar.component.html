@@ -54,8 +54,14 @@
         <div class="hidden sm:ml-6 sm:block">
           <div class="flex space-x-4">
             <a
+              *ngIf="isAdmin()"
               class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
               aria-current="page"
+              routerLink="/admin"
+              >Dashboard</a
+            >
+            <a
+              class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/blog"
               >Blog</a
             >
@@ -63,20 +69,22 @@
               *ngIf="!isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/login"
-              >Login</a
+              >Sign in</a
             >
             <a
               *ngIf="!isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/register"
-              >Register</a
+              >Sign up</a
             >
             <a
               *ngIf="isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              aria-current="page"
               routerLink="/user"
               >User Profile</a
             >
+
             <a
               *ngIf="isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
@@ -177,7 +185,6 @@
             >Dashboard</a
           >
           <a
-            *ngIf="!isLoggedIn()"
             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
             routerLink="/blog"
             role="menuitem"
@@ -229,29 +236,27 @@
   <div class="sm:hidden" id="mobile-menu" *ngIf="isMenuOpen">
     <div class="space-y-1 px-2 pb-3 pt-2">
       <a
-        class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
-        aria-current="page"
-        routerLink="/blog"
-        >Blog</a
-      >
-      <a
         *ngIf="isAdmin()"
         class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
-        aria-current="page"
         routerLink="/admin"
         >Dashboard</a
+      >
+      <a
+        class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        routerLink="/blog"
+        >Blog</a
       >
       <a
         *ngIf="!isLoggedIn()"
         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         routerLink="/login"
-        >Login</a
+        >Sign in</a
       >
       <a
         *ngIf="!isLoggedIn()"
         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         routerLink="/register"
-        >Register</a
+        >Sign up</a
       >
       <a
         *ngIf="isLoggedIn()"
