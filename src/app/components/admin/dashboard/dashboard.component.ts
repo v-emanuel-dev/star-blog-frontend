@@ -89,11 +89,6 @@ export class DashboardComponent implements OnInit {
     if (savedTab) {
       this.selectedTab = savedTab; // Define a aba selecionada com base no valor armazenado
     }
-    this.resetSelection(); // Força a seleção da opção "Select a post"
-  }
-
-  resetSelection() {
-    this.selectedPost = ''; // Reseta a seleção
   }
 
   selectTab(tab: string): void {
