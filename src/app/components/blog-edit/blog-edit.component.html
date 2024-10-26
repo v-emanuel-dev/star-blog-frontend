@@ -43,13 +43,13 @@
       <div class="mb-3">
         <label for="content" class="form-label">Content:</label>
         <ckeditor
-        [(ngModel)]="content"
-        name="content"
-        [editor]="Editor"
-        [config]="editorConfig"
-        (ready)="onReady($event)"
-        class="custom-editor"
-      ></ckeditor>
+          [(ngModel)]="content"
+          name="content"
+          [editor]="Editor"
+          [config]="editorConfig"
+          (ready)="onReady($event)"
+          class="custom-editor"
+        ></ckeditor>
       </div>
       <div class="mb-3">
         <label for="visibility" class="form-label">Visibility:</label>
@@ -65,31 +65,30 @@
       </div>
       <div class="mb-3">
         <label for="role" class="form-label">Role:</label>
-        <select
-          [(ngModel)]="role"
-          name="role"
-          required
-          class="form-control"
-        >
+        <select [(ngModel)]="role" name="role" required class="form-control">
           <option value="user">User</option>
           <option value="editor">Editor</option>
           <option value="admin">Admin</option>
         </select>
       </div>
-      <button
-        *ngFor="let category of categories"
-        type="button"
-        (click)="onCategoryChange($event, category.id!)"
-        [ngClass]="{
-          'bg-blue-600 text-white': selectedCategoryIds.includes(category.id!),
-          'bg-gray-200 text-gray-800': !selectedCategoryIds.includes(
-            category.id!
-          )
-        }"
-        class="m-1 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        {{ category.name }}
-      </button>
+      <ng-container *ngIf="categories && selectedCategoryIds.length">
+        <button
+          *ngFor="let category of categories"
+          type="button"
+          (click)="onCategoryChange($event, category.id!)"
+          [ngClass]="{
+            'bg-blue-600 text-white': selectedCategoryIds.includes(
+              category.id!
+            ),
+            'bg-gray-200 text-gray-800': !selectedCategoryIds.includes(
+              category.id!
+            )
+          }"
+          class="m-1 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {{ category.name }}
+        </button>
+      </ng-container>
       <div class="d-flex justify-content-between mt-3">
         <a routerLink="/blog" class="btn btn-secondary">Back</a>
         <button type="submit" class="btn btn-primary">Update Post</button>
@@ -152,7 +151,11 @@
     <div class="flex justify-end mt-6">
       <button
         class="bg-red-500 text-white px-4 py-2 rounded mr-2"
-        (click)="currentCategoryId !== null ? deleteCategoryModal(currentCategoryId) : null"
+        (click)="
+          currentCategoryId !== null
+            ? deleteCategoryModal(currentCategoryId)
+            : null
+        "
       >
         Deletar
       </button>

@@ -153,10 +153,8 @@ export class BlogEditComponent implements OnInit {
         this.categories = data; // Carrega todas as categorias
         console.log('All categories loaded:', this.categories);
 
-        // Após carregar todas as categorias, carrega as categorias específicas do post
-        if (this.currentPostId) {
-          this.loadCategoriesByPostId(this.currentPostId);
-        }
+        // Agora que as categorias estão carregadas, carregue as categorias do post
+        this.loadCategoriesByPostId(this.postId); // Certifique-se de usar o `postId` correto aqui
       },
       (error) => {
         console.error('Erro ao obter todas as categorias:', error);
@@ -164,13 +162,12 @@ export class BlogEditComponent implements OnInit {
     );
   }
 
-
   loadCategoriesByPostId(postId: number): void {
     this.categoryService.getCategoriesByPostId(postId).subscribe(
       (data: Category[]) => {
         console.log('Categories loaded for Post:', data);
 
-        // Atualiza as IDs selecionadas com as categorias carregadas para o post
+        // Atualiza `selectedCategoryIds` com os IDs das categorias associadas ao post
         this.selectedCategoryIds = data.map(cat => cat.id!);
         console.log('Selected Category IDs after loading categories:', this.selectedCategoryIds);
       },
