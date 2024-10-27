@@ -67,12 +67,14 @@ export class AuthService {
       .post<any>(`${this.baseUrl}/login`, { email, password })
       .pipe(
         tap((response) => {
+          console.log('Login response:', response); // Log da resposta do login
           // Armazenar informações no localStorage
           localStorage.setItem('accessToken', response.accessToken);
           localStorage.setItem('userName', response.username);
           localStorage.setItem('email', response.email);
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('userRole', response.userRole); // Armazenar o papel do usuário
+
           // Lógica para armazenar a URL da imagem do perfil
           let profilePicUrl = response.profilePicture;
 
@@ -97,11 +99,14 @@ export class AuthService {
           this.userLoggedInSubject.next(true);
           this.websocketService.fetchNotifications(response.userId);
 
+          // Atualiza o papel do usuário
+          this.setUserRole(response.userRole);
+
           // Redirecionamento baseado no papel do usuário
           if (response.userRole === 'admin') {
-            this.router.navigate(['/admin']); // Roteamento para a página de admin
+            this.router.navigate(['/admin']);
           } else {
-            this.router.navigate(['/blog']); // Roteamento para o dashboard normal
+            this.router.navigate(['/blog']);
           }
         })
       );
