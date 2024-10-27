@@ -39,11 +39,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-
     this.roleSubscription = this.authService.userRole$.subscribe((role) => {
       this.userRole = role;
+      console.log('User role updated:', this.userRole); // Log para atualização do papel do usuário
       this.cd.detectChanges(); // Força a atualização da view
     });
+
+    // Recupera o papel do usuário ao inicializar
+    this.userRole = localStorage.getItem('userRole');
+    console.log('User role retrieved from localStorage:', this.userRole); // Log para papel recuperado do localStorage
 
     this.userRole = localStorage.getItem('userRole'); // Recupera o papel do usuário
     this.imageService.profilePic$.subscribe((pic) => {
@@ -63,7 +67,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   isAdmin(): boolean {
-    return this.userRole === 'admin'; // Retorna true se o usuário for admin
+    const isAdmin = this.userRole === 'admin';
+    console.log(
+      'Checking if user is admin:',
+      isAdmin,
+      'User role:',
+      this.userRole
+    );
+    return isAdmin;
   }
 
   ngAfterViewInit(): void {
@@ -89,7 +100,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (!this.userId) return; // Verifica se userId está disponível
 
     this.http
-      .get(`https://blog-backend-production-c203.up.railway.app/api/comments/${this.userId}/notifications`)
+      .get(`http://localhost:3000/api/comments/${this.userId}/notifications`)
       .subscribe(
         (data: any) => {
           this.notifications = data;
@@ -147,7 +158,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   private removeNotificationFromDatabase(notificationId: number) {
     return this.http.delete(
-      `https://blog-backend-production-c203.up.railway.app/api/comments/notifications/${notificationId}`
+      `http://localhost:3000/api/comments/notifications/${notificationId}`
     );
   }
 
