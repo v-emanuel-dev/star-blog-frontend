@@ -32,7 +32,7 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedImage: File | null = null;
   selectedImagePreview: SafeUrl | null = null;
   profilePicture: string | null = null;
-  defaultPicture: string = 'assets/img/default-profile.png'; // URL da imagem padrão
+  defaultPicture: string = 'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png'; // URL da imagem padrão
   isAdmin: boolean = false; // Flag para verificar se o usuário é admin
 
   private roleSubscription: Subscription = new Subscription();

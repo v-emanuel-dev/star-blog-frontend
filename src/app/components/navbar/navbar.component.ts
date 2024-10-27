@@ -21,7 +21,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isNotificationsOpen: boolean = false;
   userId: number | null = null; // Inicialize com null ou um valor padrão
   profilePicture: string | null = null;
-  defaultProfilePicture: string = 'assets/img/default-profile.png';
+  defaultProfilePicture: string = 'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png';
   userRole: string | null = null; // Propriedade para armazenar o papel do usuário
 
   private roleSubscription: Subscription = new Subscription(); // Usa um Subscription container para gerenciar assinaturas
