@@ -67,12 +67,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   isAdmin(): boolean {
     const isAdmin = this.userRole === 'admin';
-    console.log(
-      'Checking if user is admin:',
-      isAdmin,
-      'User role:',
-      this.userRole
-    );
     return isAdmin;
   }
 
