@@ -212,7 +212,10 @@ export class BlogListComponent implements OnInit {
   }
 
   exportAsTxt(post: Post): void {
-    const content = `Título: ${post.title}\n\nConteúdo:\n${post.content}`;
+    // Remove tags HTML do conteúdo
+    const plainText = post.content.replace(/<[^>]*>/g, '');
+
+    const content = `Título: ${post.title}\n\nConteúdo:\n${plainText}`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, `${post.title}.txt`);
     this.message = 'Texto exportado com sucesso!';
