@@ -50,7 +50,7 @@ export class ImageService {
     // Confirma que a URL está formatada corretamente
     return picUrl.startsWith('http')
       ? picUrl
-      : `http://localhost:4200/${picUrl}`;
+      : `https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/${picUrl}`;
   }
 
   clearProfilePic(): void {
