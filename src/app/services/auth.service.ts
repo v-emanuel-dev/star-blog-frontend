@@ -80,7 +80,7 @@ export class AuthService {
           if (profilePicUrl) {
             profilePicUrl = profilePicUrl.replace(/\\/g, '/');
             if (!profilePicUrl.startsWith('http')) {
-              profilePicUrl = `https://blog-backend-production-c203.up.railway.app/${profilePicUrl}`;
+              profilePicUrl = `https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/${profilePicUrl}`;
             }
             localStorage.setItem('profilePicture', profilePicUrl);
           } else {
