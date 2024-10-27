@@ -39,19 +39,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Recupera o papel do usuário ao inicializar
-    this.userRole = localStorage.getItem('userRole'); // Pega o papel do localStorage
-    console.log('User role retrieved from localStorage:', this.userRole);
-
     this.roleSubscription = this.authService.userRole$.subscribe((role) => {
-        this.userRole = role; // Atualiza com o papel mais recente
-        console.log('User role updated:', this.userRole);
-        this.cd.detectChanges(); // Força a atualização da view
+      this.userRole = role;
+      console.log('User role updated:', this.userRole); // Log para atualização do papel do usuário
+      this.cd.detectChanges(); // Força a atualização da view
     });
 
     // Recupera o papel do usuário ao inicializar
     this.userRole = localStorage.getItem('userRole');
     console.log('User role retrieved from localStorage:', this.userRole); // Log para papel recuperado do localStorage
+
+    this.imageService.profilePic$.subscribe((pic) => {
+      this.profilePicture = pic || this.defaultProfilePicture;
+      // Força o Angular a detectar mudanças na imagem
+      this.cd.detectChanges();
+    });
 
     this.notificationsSubscription =
       this.webSocketService.notifications$.subscribe((notifications) => {
@@ -65,6 +67,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   isAdmin(): boolean {
     const isAdmin = this.userRole === 'admin';
+    console.log(
+      'Checking if user is admin:',
+      isAdmin,
+      'User role:',
+      this.userRole
+    );
     return isAdmin;
   }
 
