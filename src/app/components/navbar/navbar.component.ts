@@ -91,7 +91,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (!this.userId) return; // Verifica se userId está disponível
 
     this.http
-      .get(`http://localhost:3000/api/comments/${this.userId}/notifications`)
+      .get(`https://blog-backend-production-c203.up.railway.app/api/comments/${this.userId}/notifications`)
       .subscribe(
         (data: any) => {
           this.notifications = data;
@@ -149,7 +149,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   private removeNotificationFromDatabase(notificationId: number) {
     return this.http.delete(
-      `http://localhost:3000/api/comments/notifications/${notificationId}`
+      `https://blog-backend-production-c203.up.railway.app/api/comments/notifications/${notificationId}`
     );
   }
 
