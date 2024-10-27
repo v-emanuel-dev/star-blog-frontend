@@ -44,7 +44,6 @@ export class BlogListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
     this.roleSubscription = this.authService.userRole$.subscribe((role) => {
       this.userRole = role;
       this.cd.detectChanges(); // Força a atualização da view
@@ -114,10 +113,18 @@ export class BlogListComponent implements OnInit {
 
         postsObservable.subscribe({
           next: (data: Post[]) => {
-            this.posts = data;
+            // Ordenação de posts mais recentes primeiro
+            this.posts = data.sort((a, b) => {
+              const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+              const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+              return dateB - dateA; // Ordem decrescente
+            });
+
+            // Filtragem para exibir apenas posts públicos para usuários não logados
             this.filteredPosts = this.isLoggedIn
               ? this.posts
               : this.posts.filter((post) => post.visibility === 'public');
+
             this.updatePostsTitle();
             this.loading = false;
 

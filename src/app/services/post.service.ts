@@ -1,6 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  tap,
+  throwError,
+} from 'rxjs';
 import { Post } from '../models/post.model';
 import { AuthService } from './auth.service'; // Importe o AuthService
 
@@ -8,7 +15,7 @@ import { AuthService } from './auth.service'; // Importe o AuthService
   providedIn: 'root',
 })
 export class PostService {
-  private apiUrl = 'https://blog-backend-production-c203.up.railway.app/api/posts';
+  private apiUrl = 'http://localhost:3000/api/posts';
 
   private postsSubject = new BehaviorSubject<any[]>([]);
   posts$ = this.postsSubject.asObservable();
@@ -106,17 +113,7 @@ export class PostService {
     );
   }
 
-  getPostsAdmin(): Observable<Post[]> {
-    const token = this.getToken();
-    const headers = token
-      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
-      : new HttpHeaders();
-
-    return this.http.get<Post[]>(`${this.apiUrl}/admin`, { headers });
-  }
-
   getPosts(): Observable<Post[]> {
-
     const token = this.getToken();
     const headers = token
       ? new HttpHeaders({ Authorization: `Bearer ${token}` })
@@ -128,27 +125,18 @@ export class PostService {
         posts.forEach((post) => {
           post.likes = post.likes || 0; // Garantir que likes está definido
         });
-
-        // Se o usuário estiver logado, retorne todos os posts
-        if (this.isLoggedIn()) {
-          return posts.sort((a, b) => {
-            const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-            const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-            return dateB - dateA; // Ordenação decrescente
-          });
-        } else {
-
-          // Retornar apenas posts públicos e ordená-los
-          return posts
-            .filter((post) => post.visibility === 'public')
-            .sort((a, b) => {
-              const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-              const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-              return dateB - dateA; // Ordenação decrescente
-            });
-        }
+        return posts; // Retorna os posts sem ordenação
       })
     );
+  }
+
+  getPostsAdmin(): Observable<Post[]> {
+    const token = this.getToken();
+    const headers = token
+      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+      : new HttpHeaders();
+
+    return this.http.get<Post[]>(`${this.apiUrl}/admin`, { headers });
   }
 
   // Método para buscar um post específico pelo ID
