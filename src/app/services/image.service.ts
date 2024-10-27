@@ -36,9 +36,10 @@ export class ImageService {
   }
 
   setProfilePic(picUrl: string) {
-    const fullUrl = this.getFullProfilePicUrl(picUrl);
-    localStorage.setItem('profilePicture', picUrl); // Armazenar o valor original no localStorage
-    this.profilePicSubject.next(fullUrl); // Atualizar o BehaviorSubject com a URL completa
+    const formattedUrl = picUrl.replace(/\\/g, '/'); // Garante que todas as barras invertidas sejam substituídas
+    localStorage.setItem('profilePicture', formattedUrl); // Armazena o valor formatado no localStorage
+    const fullUrl = this.getFullProfilePicUrl(formattedUrl); // Gera a URL completa
+    this.profilePicSubject.next(fullUrl); // Atualiza o BehaviorSubject com a URL completa
   }
 
   updateProfilePic(picUrl: string): void {
@@ -46,8 +47,7 @@ export class ImageService {
   }
 
   getFullProfilePicUrl(picUrl: string): string {
-    // Substitui as barras invertidas por barras normais
-    picUrl = picUrl.replace(/\\/g, '/');
+    // Confirma que a URL está formatada corretamente
     return picUrl.startsWith('http')
       ? picUrl
       : `http://localhost:4200/${picUrl}`;

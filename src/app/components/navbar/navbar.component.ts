@@ -41,13 +41,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.roleSubscription = this.authService.userRole$.subscribe((role) => {
       this.userRole = role;
-      console.log('User role updated:', this.userRole); // Log para atualização do papel do usuário
       this.cd.detectChanges(); // Força a atualização da view
     });
 
     // Recupera o papel do usuário ao inicializar
     this.userRole = localStorage.getItem('userRole');
-    console.log('User role retrieved from localStorage:', this.userRole); // Log para papel recuperado do localStorage
 
     this.imageService.profilePic$.subscribe((pic) => {
       this.profilePicture = pic || this.defaultProfilePicture;

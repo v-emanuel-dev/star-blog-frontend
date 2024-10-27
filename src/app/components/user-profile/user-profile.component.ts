@@ -32,7 +32,8 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedImage: File | null = null;
   selectedImagePreview: SafeUrl | null = null;
   profilePicture: string | null = null;
-  defaultPicture: string = 'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png'; // URL da imagem padrão
+  defaultPicture: string =
+    'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png'; // URL da imagem padrão
   isAdmin: boolean = false; // Flag para verificar se o usuário é admin
 
   private roleSubscription: Subscription = new Subscription();
@@ -112,10 +113,18 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (userId === null) {
       this.setMessage('User ID not found.');
+      console.warn('User ID not found in localStorage.');
       return;
     }
 
-    console.log('Updating user with ID:', userId);
+    console.log('Initiating user update with ID:', userId);
+    console.log('User update payload:', {
+      username: this.username,
+      email: this.email,
+      password: this.password ? 'Provided' : 'Not provided',
+      role: this.role || 'user',
+    });
+
     this.userService
       .updateUser(
         String(userId),
@@ -123,11 +132,23 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
         this.email ?? '',
         this.password || '',
         this.selectedImage,
-        this.role || 'user', // Use 'user' como valor padrão se role for null
+        this.role || 'user',
         headers
       )
       .subscribe(
-        (response) => this.handleUserUpdateSuccess(response),
+        (response) => {
+          console.log('User update request successful. Handling response...');
+          this.handleUserUpdateSuccess(response);
+          // Chamada para atualizar a imagem de perfil se a resposta contiver a URL da imagem
+          if (response.profilePicture) {
+            // Formata a URL da imagem antes de passar ao ImageService
+            const formattedProfilePic = response.profilePicture.replace(
+              /\\/g,
+              '/'
+            );
+            this.imageService.updateProfilePic(formattedProfilePic);
+          }
+        },
         (error) => this.handleUserUpdateError(error)
       );
   }
@@ -147,21 +168,24 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleUserUpdateSuccess(response: any): void {
-    this.setMessage('User updated successfully');
-    console.log('User updated successfully. Response:', response);
-    this.loadUserData();
+    this.message = 'User updated successfully!';
+    this.success = true;
 
-    if (this.selectedImage) {
-      const imageUrl = URL.createObjectURL(this.selectedImage);
-      console.log('Creating object URL for selected image:', imageUrl);
-      this.userService.updateProfilePicture(imageUrl);
+    // Verifica e formata a URL da imagem de perfil
+    if (response.profilePicture) {
+      let formattedUrl = response.profilePicture.replace(/\\/g, '/');
+      console.log('Formatted profile picture URL:', formattedUrl);
+
+      // Atualiza a imagem no UserService e armazena a URL formatada no localStorage
+      this.profilePicture = formattedUrl;
+      this.userService.updateProfilePicture(this.profilePicture);
+      console.log('Profile picture updated in UserService.');
     }
 
+    // Recarrega os dados do usuário e limpa a imagem selecionada
+    this.loadUserData();
     this.selectedImage = null;
-    setTimeout(() => {
-      this.router.navigate(['/blog']); // Redireciona para o dashboard após 2 segundos
-      console.log('Redirecting to /blog after user update.');
-    }, 1500);
+    console.log('User data reloaded and selected image cleared.');
   }
 
   private handleUserUpdateError(error: any): void {
