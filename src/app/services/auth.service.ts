@@ -87,7 +87,7 @@ export class AuthService {
             localStorage.setItem('profilePicture', profilePicUrl);
           } else {
             console.log('No profile picture found, setting to default.');
-            profilePicUrl = 'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png'; // Defina o caminho para a imagem padrão
+            profilePicUrl = 'https://upload.wikimedia.org/wikipedia/commons/6/6e/Breezeicons-actions-22-im-user.svg'; // Defina o caminho para a imagem padrão
             localStorage.setItem('profilePicture', profilePicUrl);
           }
 
