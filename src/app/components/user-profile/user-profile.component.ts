@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
+  OnDestroy, // Importa OnDestroy para a interface
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -12,13 +13,15 @@ import { HttpHeaders } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ImageService } from '../../services/image.service';
 import { User } from '../../models/user.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
-export class UserProfileComponent implements OnInit, AfterViewInit {
+export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Implementa OnDestroy
   username: string = '';
   email: string | null = null;
   password: string = '';
@@ -32,6 +35,8 @@ export class UserProfileComponent implements OnInit, AfterViewInit {
   defaultPicture: string = 'assets/img/default-profile.png'; // URL da imagem padrão
   isAdmin: boolean = false; // Flag para verificar se o usuário é admin
 
+  private roleSubscription: Subscription = new Subscription();
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -41,9 +46,15 @@ export class UserProfileComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    // Subscrição à observable do papel do usuário
+    this.roleSubscription = this.authService.userRole$.subscribe((role) => {
+      this.role = role; // Atualiza a role diretamente
+      this.isAdmin = role === 'admin'; // Define se é admin
+      this.cd.detectChanges(); // Força atualização da view, se necessário
+    });
+
     this.loadUserData();
     this.subscribeToImageUpdates();
-    this.subscribeToUserRole();
   }
 
   ngAfterViewInit(): void {
@@ -64,27 +75,15 @@ export class UserProfileComponent implements OnInit, AfterViewInit {
   private updateUserData(user: User): void {
     this.username = user.username || '';
     this.email = user.email || '';
-    this.role = user.role || 'user';
+    this.role = user.role ?? 'user'; // Define o valor padrão como 'user'
 
-    const profilePictureUrl = user.profilePicture
-      ? this.imageService.getFullProfilePicUrl(user.profilePicture)
-      : this.defaultPicture; // Imagem padrão
-
-    this.imageService.updateProfilePic(profilePictureUrl);
-    this.profilePicture = profilePictureUrl; // Defina a imagem do perfil
+    this.isAdmin = this.role === 'admin';
   }
 
   private subscribeToImageUpdates(): void {
     this.imageService.profilePic$.subscribe((pic) => {
       this.profilePicture = pic || this.defaultPicture;
       this.cd.detectChanges();
-    });
-  }
-
-  private subscribeToUserRole(): void {
-    this.authService.getUserRole().subscribe((role) => {
-      this.role = role;
-      this.isAdmin = role === 'admin'; // Verifica se o usuário é admin
     });
   }
 
@@ -117,18 +116,20 @@ export class UserProfileComponent implements OnInit, AfterViewInit {
     }
 
     console.log('Updating user with ID:', userId);
-    this.userService.updateUser(
-      String(userId),
-      this.username,
-      this.email ?? '',
-      this.password || '',
-      this.selectedImage,
-      this.role || 'user', // Use 'user' como valor padrão se role for null
-      headers
-    ).subscribe(
-      (response) => this.handleUserUpdateSuccess(response),
-      (error) => this.handleUserUpdateError(error)
-    );
+    this.userService
+      .updateUser(
+        String(userId),
+        this.username,
+        this.email ?? '',
+        this.password || '',
+        this.selectedImage,
+        this.role || 'user', // Use 'user' como valor padrão se role for null
+        headers
+      )
+      .subscribe(
+        (response) => this.handleUserUpdateSuccess(response),
+        (error) => this.handleUserUpdateError(error)
+      );
   }
 
   private isFormInvalid(form: NgForm): boolean {
@@ -172,5 +173,12 @@ export class UserProfileComponent implements OnInit, AfterViewInit {
     this.message = message;
     this.success = false;
     console.warn(message);
+  }
+
+  ngOnDestroy(): void {
+    // Desinscreve-se da observável quando o componente é destruído
+    if (this.roleSubscription) {
+      this.roleSubscription.unsubscribe();
+    }
   }
 }

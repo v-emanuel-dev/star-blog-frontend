@@ -15,7 +15,7 @@ import { AuthService } from './auth.service'; // Importe o AuthService
   providedIn: 'root',
 })
 export class PostService {
-  private apiUrl = 'http://localhost:3000/api/posts';
+  private apiUrl = 'https://blog-backend-production-c203.up.railway.app/api/posts';
 
   private postsSubject = new BehaviorSubject<any[]>([]);
   posts$ = this.postsSubject.asObservable();
