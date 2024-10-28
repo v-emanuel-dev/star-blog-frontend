@@ -71,7 +71,7 @@
           <option value="admin">Admin</option>
         </select>
       </div>
-      <ng-container *ngIf="categories && selectedCategoryIds.length">
+      <ng-container *ngIf="categories && categories.length">
         <button
           *ngFor="let category of categories"
           type="button"
