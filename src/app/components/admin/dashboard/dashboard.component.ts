@@ -1,38 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../../services/user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { Observable, of } from 'rxjs';
+import { Category } from '../../../models/category.model';
+import { Comment } from '../../../models/comment.model';
+import { Post } from '../../../models/post.model';
+import { User } from '../../../models/user.model';
 import { CategoryService } from '../../../services/category.service';
 import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
-import { catchError, forkJoin, Observable, of, tap } from 'rxjs';
-import { User } from '../../../models/user.model';
-import { Post } from '../../../models/post.model';
-import { Category } from '../../../models/category.model';
-import { Comment } from '../../../models/comment.model';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic'; // Importa a classe do editor
-import { ActivatedRoute } from '@angular/router';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'], // Corrigi 'styleUrl' para 'styleUrls'
+  styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
   editingUser: any = null;
   editingCategory: any = null;
   editingComment: any = null;
   editingPost: any = null;
-  success: boolean = false; // Status de sucesso ou falha das ações
-  message: string | null = null; // Mensagem a ser exibida
   isModalOpen: boolean = false;
   currentPostId: number | null = null;
-  currentId: number | null = null; // ID do item a ser deletado (genérico para post, user, comment, category)
-  itemType: 'user' | 'post' | 'comment' | 'category' | null = null; // Tipo de item
-  loading: boolean = true; // Indicador de carregamento
+  currentId: number | null = null;
+  itemType: 'user' | 'post' | 'comment' | 'category' | null = null;
+  loading: boolean = true;
   newCategoryName: string = '';
   postId: number = 0;
   newComment: string = '';
-  comments: Comment[] = []; // Adicione isso na classe DashboardComponent
-  selectedPostId: number | null = null; // ID do post selecionado (inicialmente nulo)
+  comments: Comment[] = [];
+  selectedPostId: number | null = null;
 
   sections = [
     { name: 'Users', isEditing: false },
@@ -46,9 +44,9 @@ export class DashboardComponent implements OnInit {
   categories$: Observable<Category[]>;
   comments$: Observable<Comment[]>;
   selectedTab: string;
-  selectedPost: string | null = ''; // Inicializa como string vazia
+  selectedPost: string | null = '';
 
-  public Editor = ClassicEditor.default; // Use a propriedade .default aqui
+  public Editor = ClassicEditor.default;
   public editorConfig = {
     toolbar: [
       'heading',
@@ -68,18 +66,19 @@ export class DashboardComponent implements OnInit {
       'redo',
     ],
   };
+
   constructor(
     private userService: UserService,
     private categoryService: CategoryService,
     private commentService: CommentService,
     private postService: PostService,
-    private route: ActivatedRoute
+    private snackBar: MatSnackBar
   ) {
-    this.selectedTab = 'users'; // Defina o valor inicial da aba selecionada
-    this.users$ = this.userService.users$; // Assina os usuários
-    this.posts$ = this.postService.posts$; // Assina os posts
-    this.categories$ = this.categoryService.categories$; // Assina as categorias
-    this.comments$ = this.commentService.comments$; // Assina os comentários
+    this.selectedTab = 'users';
+    this.users$ = this.userService.users$;
+    this.posts$ = this.postService.posts$;
+    this.categories$ = this.categoryService.categories$;
+    this.comments$ = this.commentService.comments$;
   }
 
   ngOnInit() {
@@ -87,92 +86,74 @@ export class DashboardComponent implements OnInit {
 
     const savedTab = localStorage.getItem('selectedTab');
     if (savedTab) {
-      this.selectedTab = savedTab; // Define a aba selecionada com base no valor armazenado
+      this.selectedTab = savedTab;
     }
   }
 
   selectTab(tab: string): void {
     this.selectedTab = tab;
+    localStorage.setItem('selectedTab', tab);
   }
 
   onTabChange(event: Event): void {
-    const target = event.target as HTMLSelectElement; // Assegura que o 'target' é um select
-    this.selectTab(target.value); // Chama o método selectTab com o valor selecionado
+    const target = event.target as HTMLSelectElement;
+    this.selectTab(target.value);
   }
 
-  // Método para carregar usuários
   loadUsers(): void {
-    this.loading = true; // Inicia o estado de carregamento
-    console.log('Loading users...');
+    this.loading = true;
     this.userService.getUsers().subscribe({
-      next: (users) => {
-        console.log('Users loaded successfully:', users);
+      next: () => {
         this.loading = false;
       },
-      error: (error) => {
-        console.error('Error loading users:', error);
-        this.message = 'Failed to load users.';
+      error: () => {
+        this.openSnackBar('Failed to load users.');
         this.loading = false;
       },
     });
   }
 
-  // Método para carregar posts de admin
   loadPostsAdmin(): void {
-    this.loading = true; // Inicia o estado de carregamento
-    console.log('Loading posts...');
+    this.loading = true;
     this.postService.getPostsAdminDashboard().subscribe({
-      next: (posts) => {
-        console.log('Posts loaded successfully:', posts);
-        this.loading = false; // Atualiza o estado de carregamento
+      next: () => {
+        this.loading = false;
       },
-      error: (error) => {
-        console.error('Error loading posts:', error);
-        this.message = 'Failed to load posts.';
-        this.loading = false; // Atualiza o estado de carregamento
+      error: () => {
+        this.openSnackBar('Failed to load posts.');
+        this.loading = false;
       },
     });
   }
 
-  // Método para carregar categorias
   loadCategories(newCategory?: Category): void {
-    this.loading = true; // Inicia o estado de carregamento
-    console.log('Loading categories...');
+    this.loading = true;
 
     this.categoryService.getAllCategories().subscribe({
       next: (categories) => {
-        console.log('Categories loaded successfully:', categories);
-
-        // Se uma nova categoria foi criada, adicione-a ao início da lista
         if (newCategory) {
-          categories.unshift(newCategory); // Adiciona a nova categoria no início da lista
+          categories.unshift(newCategory);
         }
-
-        // Atualiza categories$
         this.categories$ = of(categories);
-        this.loading = false; // Atualiza o estado de carregamento
+        this.loading = false;
       },
-      error: (error) => {
-        console.error('Error loading categories:', error);
-        this.message = 'Failed to load categories.';
-        this.loading = false; // Atualiza o estado de carregamento
+      error: () => {
+        this.openSnackBar('Failed to load categories.');
+        this.loading = false;
       },
     });
   }
 
   loadComments(): void {
-    this.loading = true; // Inicia o estado de carregamento
-    console.log('Loading comments...');
+    this.loading = true;
     this.commentService.getAllComments().subscribe({
       next: (comments) => {
-        console.log('Comments loaded successfully:', comments);
-        this.commentService.updateComments(comments); // Atualiza o BehaviorSubject
-        this.loading = false; // Atualiza o estado de carregamento
+        this.commentService.updateComments(comments);
+        this.loading = false;
       },
-      error: (error) => {
-        console.error('Error loading comments:', error);
-        this.message = 'Failed to load comments.';
-        this.loading = false; // Atualiza o estado de carregamento
+      error: () => {
+        this.openSnackBar('Failed to load comments.');
+        this.loading = false;
       },
     });
   }
@@ -181,182 +162,141 @@ export class DashboardComponent implements OnInit {
     delete editor.plugins.get('FileRepository').createUploadAdapter;
   }
 
-  // Editar usuário
   startEditUser(user: any) {
-    console.log('Editing user:', user);
     this.editingUser = { ...user };
   }
 
   saveEditUser() {
     if (this.editingUser) {
-      this.loading = true; // Inicia o carregamento
-      console.log('Saving user:', this.editingUser);
+      this.loading = true;
 
       this.userService
         .updateUserAdmin(this.editingUser.id, this.editingUser)
         .subscribe({
           next: () => {
-            console.log('User updated successfully:', this.editingUser);
-            this.message = 'User updated successfully!';
-            this.success = true;
+            this.openSnackBar('User updated successfully!');
             this.editingUser = null;
           },
-          error: (error) => {
-            console.error('Error updating user:', error);
-            this.message = 'Failed to update user.';
-            this.success = false;
+          error: () => {
+            this.openSnackBar('Failed to update user.');
           },
           complete: () => {
-            this.loading = false; // Finaliza o carregamento em qualquer caso
-            this.loadUsers(); // Atualiza a lista após a operação
+            this.loading = false;
+            this.loadUsers();
           },
         });
     }
   }
 
   cancelEditUser() {
-    console.log('Edit canceled for user:', this.editingUser);
     this.editingUser = null;
   }
 
-  // Deletar usuário
   deleteUser(id: number) {
     this.loading = true;
     this.userService.deleteUser(id).subscribe({
-      next: (response) => {
-        console.log('User deleted successfully:', response);
-        this.message = 'User deleted successfully!';
-        this.success = true;
+      next: () => {
+        this.openSnackBar('User deleted successfully!');
         this.loadUsers();
       },
-      error: (err) => {
-        console.error('Error deleting user:', err);
-        this.message = 'Failed to delete user.';
-        this.success = false;
+      error: () => {
+        this.openSnackBar('Failed to delete user.');
       },
       complete: () => {
-        this.loading = false; // Finaliza o carregamento
+        this.loading = false;
       },
     });
   }
 
-  // Editar categoria
   startEditCategory(category: any) {
-    console.log('Editing category:', category);
     this.editingCategory = { ...category };
   }
 
   saveEditCategory() {
     if (this.editingCategory) {
       this.loading = true;
-      console.log('Saving category:', this.editingCategory);
+
       this.categoryService
         .updateCategory(this.editingCategory.id, this.editingCategory)
         .subscribe({
           next: () => {
-            console.log('Category updated successfully:', this.editingCategory);
-            this.message = 'Category updated successfully!';
-            this.success = true;
+            this.openSnackBar('Category updated successfully!');
             this.loadCategories();
             this.editingCategory = null;
           },
-          error: (error) => {
-            console.error('Error updating category:', error);
-            this.message = 'Failed to update category.';
-            this.success = false;
+          error: () => {
+            this.openSnackBar('Failed to update category.');
           },
           complete: () => {
-            this.loading = false; // Finaliza o carregamento
+            this.loading = false;
           },
         });
     }
   }
 
   addCategory(): void {
-    console.log('Tentando adicionar uma nova categoria');
-
     if (this.newCategoryName.trim()) {
-      console.log('Nome da nova categoria:', this.newCategoryName);
-      console.log('ID do post associado:', this.currentPostId);
-
       const category: Omit<Category, 'id'> = {
         name: this.newCategoryName,
         postId: this.currentPostId,
       };
 
-      console.log('Criando categoria com os seguintes dados:', category);
-
       this.categoryService.createCategory(category).subscribe({
         next: (createdCategory) => {
-          console.log('Categoria criada com sucesso:', createdCategory);
-          this.newCategoryName = ''; // Limpa o campo após a adição
-
-          // Chama loadCategories passando a nova categoria criada
+          this.newCategoryName = '';
           this.loadCategories(createdCategory);
+          this.openSnackBar('Category created successfully!');
         },
-        error: (error) => {
-          console.error('Erro ao criar categoria:', error);
+        error: () => {
+          this.openSnackBar('Failed to create category.');
         },
       });
     } else {
-      console.error('O nome da categoria não pode estar vazio');
+      this.openSnackBar('Category name cannot be empty.');
     }
   }
 
   cancelEditCategory() {
-    console.log('Edit canceled for category:', this.editingCategory);
     this.editingCategory = null;
   }
 
-  // Deletar categoria
   deleteCategory(id: number) {
     this.loading = true;
     this.categoryService.deleteCategory(id).subscribe({
-      next: (response) => {
-        console.log('Category deleted successfully:', response);
-        this.message = 'Category deleted successfully!';
-        this.success = true;
+      next: () => {
+        this.openSnackBar('Category deleted successfully!');
         this.loadCategories();
       },
-      error: (err) => {
-        console.error('Error deleting category:', err);
-        this.message = 'Failed to delete category.';
-        this.success = false;
+      error: () => {
+        this.openSnackBar('Failed to delete category.');
       },
       complete: () => {
-        this.loading = false; // Finaliza o carregamento
+        this.loading = false;
       },
     });
   }
 
-  // Editar comentário
   startEditComment(comment: any) {
-    console.log('Editing comment:', comment);
     this.editingComment = { ...comment };
   }
 
   saveEditComment() {
     if (this.editingComment) {
       this.loading = true;
-      console.log('Saving comment:', this.editingComment);
       this.commentService
         .updateComment(this.editingComment.id, this.editingComment)
         .subscribe({
           next: () => {
-            console.log('Comment updated successfully:', this.editingComment);
-            this.message = 'Comment updated successfully!';
-            this.success = true;
+            this.openSnackBar('Comment updated successfully!');
             this.loadComments();
             this.editingComment = null;
           },
-          error: (error) => {
-            console.error('Error updating comment:', error);
-            this.message = 'Failed to update comment.';
-            this.success = false;
-            this.loading = false; // Finaliza o carregamento
+          error: () => {
+            this.openSnackBar('Failed to update comment.');
+            this.loading = false;
           },
           complete: () => {
-            this.loading = false; // Finaliza o carregamento
+            this.loading = false;
           },
         });
     }
@@ -376,52 +316,37 @@ export class DashboardComponent implements OnInit {
         username,
       };
 
-      console.log('Conteúdo do novo comentário:', this.newComment);
-      console.log('ID do post associado:', this.selectedPostId);
-      console.log('ID do usuário:', userId);
-      console.log('Nome de usuário:', username);
-      console.log('Comentário a ser enviado:', comment);
-
       this.commentService.addComment(comment).subscribe(
         () => {
-          console.log('Comentário enviado ao backend');
           this.newComment = '';
-          this.loadComments(); // Método para carregar os comentários do post
+          this.loadComments();
+          this.openSnackBar('Comment added successfully!');
         },
-        (error) => {
-          console.error('Erro ao adicionar comentário:', error);
-          this.message = 'Erro ao adicionar comentário. Tente novamente.';
+        () => {
+          this.openSnackBar('Failed to add comment. Please try again.');
         }
       );
     } else {
-      console.error('O conteúdo do comentário não pode estar vazio');
-      this.message = 'Por favor, insira um comentário antes de enviar.';
+      this.openSnackBar('Comment cannot be empty.');
     }
   }
 
   cancelEditComment() {
-    console.log('Edit canceled for comment:', this.editingComment);
     this.editingComment = null;
   }
 
-  // Deletar comentário
   deleteComment(id: number) {
     this.loading = true;
     this.commentService.deleteComment(id).subscribe({
-      next: (response) => {
-        console.log('Comment deleted successfully:', response);
-        this.message = 'Comment deleted successfully!';
-        this.success = true;
+      next: () => {
+        this.openSnackBar('Comment deleted successfully!');
         this.loadComments();
       },
-      error: (err) => {
-        console.error('Error deleting comment:', err);
-        this.message = 'Failed to delete comment.';
-        this.success = false;
-        this.loading = false; // Finaliza o carregamento
+      error: () => {
+        this.openSnackBar('Failed to delete comment.');
       },
       complete: () => {
-        this.loading = false; // Finaliza o carregamento
+        this.loading = false;
       },
     });
   }
@@ -440,16 +365,12 @@ export class DashboardComponent implements OnInit {
         .updatePost(this.editingPost.id, this.editingPost)
         .subscribe({
           next: () => {
-            console.log('Post updated successfully:', this.editingPost);
-            this.message = 'Post updated successfully!';
-            this.success = true;
+            this.openSnackBar('Post updated successfully!');
             this.editingPost = null;
             this.loadPostsAdmin();
           },
           error: (error) => {
-            console.error('Error updating post:', error);
-            this.message = 'Failed to update post.';
-            this.success = false;
+            this.openSnackBar('Failed to update post.');
             this.loading = false; // Finaliza o carregamento
           },
           complete: () => {
@@ -469,16 +390,12 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     this.postService.deletePost(id).subscribe({
       next: (response) => {
-        console.log('Post deleted successfully:', response);
-        this.message = 'Post deleted successfully!';
-        this.success = true;
+        this.openSnackBar('Post deleted successfully!');
         this.editingPost = null;
         this.loadPostsAdmin();
       },
       error: (err) => {
-        console.error('Error deleting post:', err);
-        this.message = 'Failed to delete post.';
-        this.success = false;
+        this.openSnackBar('Failed to delete post.');
         this.loading = false; // Finaliza o carregamento
       },
       complete: () => {
@@ -544,9 +461,7 @@ export class DashboardComponent implements OnInit {
       // Executa o serviço de deleção e trata o resultado
       deleteObservable.subscribe({
         next: () => {
-          console.log(`${this.itemType} deletado com sucesso!`);
-          this.message = `${this.itemType} deletado com sucesso!`;
-          this.success = true;
+          this.openSnackBar(`${this.itemType} Deleted successfully!`);
 
           // Recarrega os dados da lista correspondente ao tipo do item
           switch (this.itemType) {
@@ -568,21 +483,11 @@ export class DashboardComponent implements OnInit {
         },
         error: (err) => {
           console.error(`Erro ao deletar ${this.itemType}:`, err);
-          this.message = `Falha ao deletar ${this.itemType}.`;
-          this.success = false;
-        },
-        complete: () => {
-          setTimeout(() => {
-            this.message = ''; // Limpa a mensagem após um tempo
-          }, 2000);
+          this.openSnackBar(`Failed to delete ${this.itemType}.`);
         },
       });
     } else {
-      console.error(
-        'ID ou tipo de item não são válidos:',
-        this.currentId,
-        this.itemType
-      );
+      this.openSnackBar('ID or item type are not valid:');
     }
   }
 
@@ -591,5 +496,16 @@ export class DashboardComponent implements OnInit {
     this.loadPostsAdmin();
     this.loadCategories();
     this.loadComments();
+  }
+
+  private openSnackBar(
+    message: string,
+    action: string = 'Close',
+    duration: number = 3000
+  ): void {
+    this.snackBar.open(message, action, {
+      panelClass: ['star-snackbar'],
+      duration: duration,
+    });
   }
 }

@@ -6,24 +6,19 @@
     <div *ngIf="post">
       <h2 class="display-4 mb-4">{{ post.title }}</h2>
       <p class="lead" [innerHTML]="post.content"></p>
-      <!-- Lista de categorias -->
       <div class="categories-list mt-5 flex flex-wrap">
-        <!-- Aumentei a margem superior para mt-5 -->
         <span
           *ngFor="let category of categories; let last = last"
           class="badge rounded-full bg-warning me-4 flex items-center shadow-md custom-pill"
           style="max-width: fit-content"
         >
-          <!-- Usei rounded-full e adicionei shadow -->
           <span class="text-black mr-3">{{ category.name }}</span>
-          <!-- Texto preto -->
           <button
           (click)="deleteCategoryFromPost(category.id!, postId)"
           class="remove-icon focus:outline-none"
             aria-label="Remove category"
           >
             <i class="fa-solid fa-times"></i>
-            <!-- Ícone "x" -->
           </button>
         </span>
       </div>
@@ -44,10 +39,7 @@
     </div>
   </div>
 </div>
-
-<!-- Comments Section -->
 <div class="container mx-auto mt-4">
-  <!-- Add Comment -->
   <div class="bg-white shadow-md rounded-lg mb-6">
     <div class="px-4 py-3 border-b">
       <h3 class="text-lg font-semibold">Add a Comment</h3>
@@ -66,7 +58,6 @@
       </button>
     </div>
   </div>
-  <!-- Comment List -->
   <div
     *ngFor="let comment of comments"
     class="bg-white shadow-md rounded-lg mb-4"
@@ -81,12 +72,9 @@
     </div>
     <div class="px-4 py-3">
       <div class="flex items-center">
-        <!-- Comment display -->
         <div *ngIf="editCommentId !== comment.id" class="flex-grow">
           <p class="text-gray-700">{{ comment.content }}</p>
         </div>
-
-        <!-- Comment edit -->
         <div *ngIf="editCommentId === comment.id" class="flex-grow">
           <input
             [(ngModel)]="editCommentContent"
@@ -96,8 +84,6 @@
           />
         </div>
       </div>
-
-      <!-- Action buttons -->
       <div *ngIf="isLoggedIn" class="flex justify-end mt-3 space-x-2">
         <button
           *ngIf="editCommentId !== comment.id"
@@ -106,8 +92,6 @@
         >
           Edit
         </button>
-
-
         <button
           *ngIf="editCommentId === comment.id"
           (click)="saveComment()"
@@ -122,8 +106,6 @@
         >
           Cancel
         </button>
-
-
         <button
           *ngIf="comment.id !== undefined"
           (click)="confirmDeleteComment(comment.id)"
@@ -135,10 +117,7 @@
     </div>
   </div>
 </div>
-
-<!-- Categories Section -->
 <div *ngIf="isLoggedIn" class="container mx-auto mt-3">
-  <!-- Add Category -->
   <div class="bg-white shadow-md rounded-lg mb-6">
     <div class="px-4 py-3 border-b">
       <h3 class="text-lg font-semibold">Add a Category</h3>
@@ -157,8 +136,6 @@
       </button>
     </div>
   </div>
-
-  <!-- Category List -->
   <div
     *ngFor="let category of allCategories"
     class="bg-white shadow-md rounded-lg mb-4"
@@ -170,12 +147,9 @@
     </div>
     <div class="px-4 py-3">
       <div class="flex items-center">
-        <!-- Category display -->
         <div *ngIf="editCategoryId !== category.id" class="flex-grow">
           <p class="text-gray-700">{{ category.name }}</p>
         </div>
-
-        <!-- Category edit -->
         <div *ngIf="editCategoryId === category.id" class="flex-grow">
           <input
             [(ngModel)]="editCategoryName"
@@ -185,8 +159,6 @@
           />
         </div>
       </div>
-
-      <!-- Action buttons -->
       <div *ngIf="isLoggedIn" class="flex justify-end mt-3 space-x-2">
         <button
           *ngIf="editCategoryId !== category.id"
@@ -220,6 +192,7 @@
     </div>
   </div>
 </div>
+
 <!-- Modal Overlay -->
 <div
   class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
