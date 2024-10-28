@@ -3,3 +3,19 @@
   font-size: 0.8rem; /* Tamanho do texto (pode ser ajustado) */
   font-weight: 600; /* Peso da fonte regular */
 }
+
+.truncate-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block; /* ou inline-block */
+  max-width: 100%; /* Ajuste para limitar a largura conforme necessário */
+}
+
+.truncate-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Quantidade de linhas antes de cortar */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

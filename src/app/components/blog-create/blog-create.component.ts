@@ -27,6 +27,7 @@ export class BlogCreateComponent implements OnInit {
   isModalOpen: boolean = false;
   currentCategoryId: number | null = null;
   editingCategory: any = null;
+  loading: boolean = false;
 
   public Editor = ClassicEditor.default;
   public blogEditorContent: string = '';
@@ -121,12 +122,16 @@ export class BlogCreateComponent implements OnInit {
       likes: 0,
     };
 
+    this.loading = true;
+
     this.postService.createPost(newPost).subscribe({
       next: (response) => {
+        this.loading = false;
         this.openSnackBar('Post created successfully!');
         this.router.navigate(['/blog']);
       },
       error: (error) => {
+        this.loading = false;
         console.error('Error creating post:', error);
         this.openSnackBar('Error creating post.');
       },

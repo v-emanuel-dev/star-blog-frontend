@@ -1,19 +1,18 @@
 import { Component } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 
 @Component({
-  selector: 'app-login', // Selector for the component
-  templateUrl: './login.component.html', // Path to the HTML template
+  selector: 'app-login',
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
-  email: string = ''; // Email input field
-  password: string = ''; // Password input field
-  returnUrl: string | null = null; // URL to return after login, if needed
-  success: boolean = false; // Indicates if the message is a success or error
-  message: string | null = null; // Mensagem a ser exibida
-  loading = false; // Adicione esta variável na sua classe
+  email: string = '';
+  password: string = '';
+  returnUrl: string | null = null;
+  loading = false;
   profileImageUrl: string | null = null;
   googleLoginInProgress: boolean = false;
 
@@ -22,18 +21,16 @@ export class LoginComponent {
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
     const storedImage = localStorage.getItem('profileImage');
     this.profileImageUrl = storedImage ? storedImage : null;
-    // This lifecycle hook runs after the component is initialized
+
     this.route.queryParams.subscribe((params) => {
-      // Subscribing to query parameters to check for messages
       if (params['message']) {
-        // Use brackets to access the parameter
-        this.message = params['message']; // Set the message from query params
-        this.success = false; // Set success to false for error messages
+        this.snackbar(params['message']);
       }
     });
 
@@ -43,7 +40,6 @@ export class LoginComponent {
   login() {
     this.loading = true;
 
-    // Verifica se o login pelo Google está em progresso e não exibe a mensagem de erro.
     if (this.googleLoginInProgress) {
       return;
     }
@@ -51,12 +47,10 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe(
       (response) => {
         localStorage.setItem('token', response.accessToken);
-        this.message = 'Login successful! Redirecting...';
-        this.success = true;
+        this.snackbar('Login successful! Redirecting...');
 
         const userId = response.userId;
 
-        // Carregar a imagem do perfil após o login.
         this.userService.getUserById(userId).subscribe(
           (user) => {
             if (user.profilePicture) {
@@ -66,16 +60,14 @@ export class LoginComponent {
             this.router.navigate(['/blog']);
           },
           (error) => {
-            console.error('Error fetching user data:', error);
+            this.snackbar('Error fetching user data:');
             this.loading = false;
           }
         );
       },
       (error) => {
         if (!this.googleLoginInProgress) {
-          console.error('Login failed:', error);
-          this.message = 'Login failed! Check your credentials.';
-          this.success = false;
+          this.snackbar('Login failed! Check your credentials.');
         }
         this.loading = false;
       }
@@ -89,10 +81,16 @@ export class LoginComponent {
   }
 
   logout() {
-    this.authService.logout(); // Limpa informações no AuthService.
-    localStorage.removeItem('token'); // Remove o token de autenticação do localStorage.
-    this.authService.setProfileImageUrl(''); // Define a URL da imagem como vazia.
-    this.profileImageUrl = null; // Limpa a variável que armazena a URL da imagem.
-    this.router.navigate(['/login']); // Redireciona para a página de login.
+    this.authService.logout();
+    localStorage.removeItem('token');
+    this.authService.setProfileImageUrl('');
+    this.profileImageUrl = null;
+    this.router.navigate(['/login']);
+  }
+
+  snackbar(message: string): void {
+    this.snackBar.open(message, '', {
+      duration: 2000,
+    });
   }
 }

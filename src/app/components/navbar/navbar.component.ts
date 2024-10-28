@@ -6,6 +6,7 @@ import { WebSocketService } from '../../services/websocket.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
 import { ImageService } from '../../services/image.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-navbar',
@@ -19,13 +20,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   notifications: any[] = [];
   unreadNotificationsCount: number = 0;
   isNotificationsOpen: boolean = false;
-  userId: number | null = null; // Inicialize com null ou um valor padrão
+  userId: number | null = null;
   profilePicture: string | null = null;
   defaultProfilePicture: string = 'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png';
-  userRole: string | null = null; // Propriedade para armazenar o papel do usuário
+  userRole: string | null = null;
 
-  private roleSubscription: Subscription = new Subscription(); // Usa um Subscription container para gerenciar assinaturas
-  private notificationsSubscription: Subscription | undefined; // Adicionando subscription para notificações
+  private roleSubscription: Subscription = new Subscription();
+  private notificationsSubscription: Subscription | undefined;
   private subscription: Subscription = new Subscription();
 
   constructor(
@@ -35,21 +36,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private changeDetectorRef: ChangeDetectorRef,
     private imageService: ImageService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.roleSubscription = this.authService.userRole$.subscribe((role) => {
       this.userRole = role;
-      this.cd.detectChanges(); // Força a atualização da view
+      this.cd.detectChanges();
     });
 
-    // Recupera o papel do usuário ao inicializar
     this.userRole = localStorage.getItem('userRole');
 
     this.imageService.profilePic$.subscribe((pic) => {
       this.profilePicture = pic || this.defaultProfilePicture;
-      // Força o Angular a detectar mudanças na imagem
       this.cd.detectChanges();
     });
 
@@ -57,19 +57,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.webSocketService.notifications$.subscribe((notifications) => {
         this.notifications = notifications;
         this.unreadNotificationsCount = this.notifications.length;
-        this.changeDetectorRef.detectChanges(); // Força a detecção de mudanças na interface
+        this.changeDetectorRef.detectChanges();
       });
 
     document.addEventListener('click', this.closeDropdowns.bind(this));
   }
 
   isAdmin(): boolean {
-    const isAdmin = this.userRole === 'admin';
-    return isAdmin;
+    return this.userRole === 'admin';
   }
 
   ngAfterViewInit(): void {
-    // Força a detecção de mudanças após a inicialização da view
     this.cd.detectChanges();
   }
 
@@ -84,11 +82,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.router.navigate(['/login'], {
         queryParams: { message: 'Please log in to proceed' },
       });
+      this.snackbar('Please log in to proceed');
     }
   }
 
   fetchNotifications() {
-    if (!this.userId) return; // Verifica se userId está disponível
+    if (!this.userId) return;
 
     this.http
       .get(`https://blog-backend-production-c203.up.railway.app/api/comments/${this.userId}/notifications`)
@@ -97,52 +96,42 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.notifications = data;
           this.unreadNotificationsCount = this.notifications.filter(
             (n) => !n.read
-          ).length; // Atualiza a contagem de notificações não lidas
+          ).length;
         },
         (error: HttpErrorResponse) => {
-          console.error('Erro ao buscar notificações:', error);
+          this.snackbar('Error fetching notifications');
         }
       );
   }
 
   toggleNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
-    console.log(
-      'toggleNotifications: Notificações abertas:',
-      this.isNotificationsOpen
-    ); // Verificar se o estado está sendo alterado
+    this.snackbar(
+      `Notifications ${this.isNotificationsOpen ? 'opened' : 'closed'}`
+    );
   }
 
   markAsRead(index: number) {
     if (index < 0 || index >= this.notifications.length) {
-      console.error(
-        'Índice inválido para marcação de notificação como lida:',
-        index
-      );
+      this.snackbar('Invalid notification index');
       return;
     }
 
     const notificationToRemove = this.notifications[index];
-    console.log('Marcando a notificação como lida:', notificationToRemove); // Log da notificação sendo marcada como lida
+    this.snackbar('Marking notification as read');
 
-    // Atualiza o estado local
     this.notifications.splice(index, 1);
     this.unreadNotificationsCount = this.notifications.length;
-    this.isNotificationsOpen = false; // Fecha as notificações ao marcar como lida
+    this.isNotificationsOpen = false;
 
-    // Atualiza a notificação como lida
     notificationToRemove.read = true;
 
-    // Remover a notificação do banco de dados
     this.removeNotificationFromDatabase(notificationToRemove.id).subscribe(
       () => {
-        console.log(
-          'Notificação removida do banco de dados com sucesso:',
-          notificationToRemove.id
-        );
+        this.snackbar('Notification successfully removed from database');
       },
-      (error) => {
-        console.error('Erro ao remover notificação do banco de dados:', error);
+      () => {
+        this.snackbar('Error removing notification from database');
       }
     );
   }
@@ -160,7 +149,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   markNotificationAsRead(index: number): void {
     this.notifications.splice(index, 1);
     this.unreadNotificationsCount = this.notifications.length;
-    // Aqui, você pode enviar uma atualização para o backend, se necessário, para marcar a notificação como lida.
   }
 
   closeDropdowns(event: MouseEvent) {
@@ -173,7 +161,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       !notificationButton.contains(target) &&
       userMenuButton &&
       !userMenuButton.contains(target) &&
-      !target.closest('.notifications') // Verifica se o clique ocorreu fora das notificações
+      !target.closest('.notifications')
     ) {
       this.isNotificationsOpen = false;
       this.isDropdownOpen = false;
@@ -181,7 +169,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onImageError() {
-    console.log('Failed to load profile picture, using default.');
+    this.snackbar('Failed to load profile picture, using default.');
     this.profilePicture = this.defaultProfilePicture;
   }
 
@@ -191,9 +179,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.unreadNotificationsCount = 0;
 
     this.authService.logout();
+    this.snackbar('Logged out successfully');
   }
 
   ngOnDestroy() {
     document.removeEventListener('click', this.closeDropdowns.bind(this));
+  }
+
+  snackbar(message: string): void {
+    this.snackBar.open(message, '', {
+      duration: 2000,
+    });
   }
 }

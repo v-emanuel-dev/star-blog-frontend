@@ -19,7 +19,16 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { RegisterComponent } from './components/register/register.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { AuthService } from './services/auth.service';
-
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input'; // Para inputs
+import { MatButtonModule } from '@angular/material/button'; // Para botões
+import { MatIconModule } from '@angular/material/icon'; // Para ícones
+import { MatListModule } from '@angular/material/list'; // Para listas
+import { MatSelectModule } from '@angular/material/select'; // Para seleções
+import { MatTabsModule } from '@angular/material/tabs'; // Para abas
+import { MatDialogModule } from '@angular/material/dialog'; // Para modais
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,8 +52,18 @@ import { AuthService } from './services/auth.service';
     BrowserAnimationsModule,
     ReactiveFormsModule,
     CKEditorModule,
+    MatSnackBarModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatSelectModule,
+    MatTabsModule,
+    MatDialogModule,
+    MatProgressSpinnerModule
+
   ],
-  providers: [AuthService, AuthGuard],
+  providers: [AuthService, AuthGuard, provideAnimationsAsync()],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

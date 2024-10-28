@@ -23,3 +23,11 @@ button {
 button:hover {
   transform: translateY(-2px); /* Eleva o botão ao passar o mouse */
 }
+
+.truncate-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block; /* ou inline-block */
+  max-width: 100%; /* Ajuste para limitar a largura conforme necessário */
+}

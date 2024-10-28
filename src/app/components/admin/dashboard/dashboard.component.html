@@ -1,40 +1,12 @@
+<div class="spinner-container" *ngIf="loading">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
+
 <div
   class="container mx-auto p-6 max-w-screen-lg bg-white rounded-lg shadow-md"
 >
   <h2 class="text-center m-4 display-4">Dashboard</h2>
-
-  <!-- Loading Animation -->
-  <div
-    *ngIf="loading"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75"
-  >
-    <button
-      type="button"
-      class="bg-gray-200 text-black font-semibold py-2 px-3 rounded-md flex items-center shadow-md"
-      disabled
-    >
-      <svg class="animate-spin h-5 w-5 mr-2 text-gray-500" viewBox="0 0 24 24">
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"
-        ></path>
-      </svg>
-      Processing...
-    </button>
-  </div>
-
-  <!-- Tabs/Select for Navigation -->
   <div class="mb-6">
-    <!-- Tabs for larger screens -->
     <div class="hidden sm:flex space-x-2">
       <button
         (click)="selectTab('users')"
@@ -77,8 +49,6 @@
         Comments
       </button>
     </div>
-
-    <!-- Dropdown for smaller screens -->
     <div class="sm:hidden">
       <select
         [(ngModel)]="selectedTab"
@@ -92,11 +62,8 @@
       </select>
     </div>
   </div>
-
   <ng-container *ngIf="selectedTab === 'users'">
     <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Users</h2>
-
-    <!-- Botão para criar um novo usuário -->
     <div class="mb-6">
       <button
         routerLink="/register"
@@ -105,7 +72,6 @@
         Create new user
       </button>
     </div>
-
     <ul class="space-y-4">
       <li
         *ngFor="let user of users$ | async"
@@ -115,7 +81,7 @@
           *ngIf="editingUser?.id !== user.id"
           class="flex justify-between items-center w-full"
         >
-          <span class="text-lg text-gray-800 truncate md:w-2/3">
+          <span class="text-lg text-gray-800 truncate-title md:w-2/3">
             {{ user.username }} - {{ user.email }} - {{ user.role }}
           </span>
           <div class="flex space-x-2">
@@ -169,8 +135,6 @@
       </li>
     </ul>
   </ng-container>
-
-  <!-- Posts Section -->
   <ng-container *ngIf="selectedTab === 'posts'">
     <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Posts</h2>
     <div class="mb-6">
@@ -191,11 +155,9 @@
           class="flex justify-between items-center w-full"
         >
           <span
-            class="text-lg text-gray-800 flex items-center space-x-2 md:w-2/3"
+            class="text-lg text-gray-800 flex items-center space-x-2 truncate-title md:w-2/3"
           >
-            <span>{{ post.title }}</span>
-            <span>-</span>
-            <span>{{ post.created_at | date : "short" }}</span>
+            {{ post.title }} - {{ post.created_at | date : "short" }}
           </span>
           <div class="flex space-x-2">
             <button
@@ -244,8 +206,6 @@
       </li>
     </ul>
   </ng-container>
-
-  <!-- Categories Section -->
   <ng-container *ngIf="selectedTab === 'categories'">
     <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Categories</h2>
     <div class="mb-6">
@@ -277,7 +237,7 @@
           *ngIf="editingCategory?.id !== category.id"
           class="flex justify-between items-center w-full"
         >
-          <span class="text-lg text-gray-800 truncate md:w-2/3">
+          <span class="text-lg text-gray-800 truncate-title md:w-2/3">
             {{ category.name }}
           </span>
           <div class="flex space-x-2">
@@ -322,12 +282,8 @@
       </li>
     </ul>
   </ng-container>
-
-  <!-- Comments Section -->
   <ng-container *ngIf="selectedTab === 'comments'">
     <h2 class="text-2xl font-semibold mb-6 mt-6 text-gray-800">Comments</h2>
-
-    <!-- Formulário para adicionar um novo comentário -->
     <div class="mb-6">
       <form (submit)="addComment()" class="mt-4">
         <select
@@ -336,8 +292,8 @@
           class="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
           required
         >
-        <option [ngValue]="null" disabled selected>Select a post</option>
-        <option *ngFor="let post of posts$ | async" [value]="post.id">
+          <option [ngValue]="null" disabled selected>Select a post</option>
+          <option *ngFor="let post of posts$ | async" [value]="post.id">
             {{ post.title }}
           </option>
         </select>
@@ -360,8 +316,6 @@
         </button>
       </form>
     </div>
-
-    <!-- Lista de comentários -->
     <ul class="space-y-4">
       <li
         *ngFor="let comment of comments$ | async"
@@ -371,7 +325,7 @@
           *ngIf="editingComment?.id !== comment.id"
           class="flex justify-between items-center w-full"
         >
-          <span class="text-lg text-gray-800 truncate md:w-2/3">
+          <span class="text-lg text-gray-800 truncate-title md:w-2/3">
             {{ comment.content }} - {{ comment.created_at | date : "short" }}
           </span>
           <div class="flex space-x-2">

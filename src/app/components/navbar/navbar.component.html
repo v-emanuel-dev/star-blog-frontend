@@ -46,11 +46,9 @@
         <a routerLink="/blog" class="ml-12">
           <i class="fa-solid fa-splotch fa-2x text-white"></i>
         </a>
+        <span class="text-white text-xl font-bold ml-3">Star Blog</span>
       </div>
-      <span class="text-white text-xl font-bold ml-3">Star Blog</span>
-      <span
-        class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"
-      >
+      <span class="flex flex-1 items-center justify-start">
         <div class="hidden sm:ml-6 sm:block">
           <div class="flex space-x-4">
             <a
@@ -58,47 +56,38 @@
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/admin"
               routerLinkActive="bg-gray-900 text-white"
-              >Dashboard</a
-            >
+            >Dashboard</a>
             <a
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/blog"
               routerLinkActive="bg-gray-900 text-white"
-              >Blog</a
-            >
+            >Blog</a>
             <a
               *ngIf="!isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/login"
               routerLinkActive="bg-gray-900 text-white"
-              >Sign in</a
-            >
+            >Sign in</a>
             <a
               *ngIf="!isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/register"
               routerLinkActive="bg-gray-900 text-white"
-              >Sign up</a
-            >
+            >Sign up</a>
             <a
               *ngIf="isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               routerLink="/user"
               routerLinkActive="bg-gray-900 text-white"
-              >User Profile</a
-            >
-
+            >User Profile</a>
             <a
               *ngIf="isLoggedIn()"
               class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
               (click)="logout()"
-              >Logout</a
-            >
+            >Logout</a>
           </div>
         </div>
       </span>
-
-      <!-- Notificações na Navbar -->
       <div class="relative">
         <button
           type="button"
@@ -116,7 +105,6 @@
             {{ unreadNotificationsCount }}
           </span>
         </button>
-
         <div
           *ngIf="isNotificationsOpen"
           class="absolute right-0 z-10 mt-1 w-64 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -139,8 +127,6 @@
           </ng-template>
         </div>
       </div>
-
-      <!-- Profile dropdown -->
       <div class="relative ml-3">
         <div>
           <button
@@ -169,7 +155,6 @@
             </ng-template>
           </button>
         </div>
-
         <div
           class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           role="menu"
@@ -185,16 +170,14 @@
             role="menuitem"
             tabindex="-1"
             id="user-menu-item-2"
-            >Dashboard</a
-          >
+          >Dashboard</a>
           <a
             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
             routerLink="/blog"
             role="menuitem"
             tabindex="-1"
             id="user-menu-item-0"
-            >Blog</a
-          >
+          >Blog</a>
           <a
             *ngIf="!isLoggedIn()"
             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
@@ -202,8 +185,7 @@
             role="menuitem"
             tabindex="-1"
             id="user-menu-item-1"
-            >Sign in</a
-          >
+          >Sign in</a>
           <a
             *ngIf="!isLoggedIn()"
             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
@@ -211,8 +193,7 @@
             role="menuitem"
             tabindex="-1"
             id="user-menu-item-2"
-            >Sign up</a
-          >
+          >Sign up</a>
           <a
             *ngIf="isLoggedIn()"
             routerLink="/user"
@@ -220,59 +201,55 @@
             role="menuitem"
             tabindex="-1"
             id="user-menu-item-3"
-            >Your Profile</a
-          >
+          >Your Profile</a>
           <a
             *ngIf="isLoggedIn()"
             (click)="logout()"
             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
             role="menuitem"
             tabindex="-1"
-            id="user-menu-item-2"
-            >Sign out</a
-          >
+            id="user-menu-item-4"
+          >Logout</a>
         </div>
       </div>
     </div>
   </div>
-
   <div class="sm:hidden" id="mobile-menu" *ngIf="isMenuOpen">
     <div class="space-y-1 px-2 pb-3 pt-2">
       <a
         *ngIf="isAdmin()"
-        class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
+        class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         routerLink="/admin"
-        >Dashboard</a
-      >
+        routerLinkActive="bg-gray-900 text-white"
+      >Dashboard</a>
       <a
         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         routerLink="/blog"
-        >Blog</a
-      >
+        routerLinkActive="bg-gray-900 text-white"
+      >Blog</a>
       <a
         *ngIf="!isLoggedIn()"
         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         routerLink="/login"
-        >Sign in</a
-      >
+        routerLinkActive="bg-gray-900 text-white"
+      >Sign in</a>
       <a
         *ngIf="!isLoggedIn()"
         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         routerLink="/register"
-        >Sign up</a
-      >
+        routerLinkActive="bg-gray-900 text-white"
+      >Sign up</a>
       <a
         *ngIf="isLoggedIn()"
         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         routerLink="/user"
-        >User Profile</a
-      >
+        routerLinkActive="bg-gray-900 text-white"
+      >User Profile</a>
       <a
         *ngIf="isLoggedIn()"
         class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         (click)="logout()"
-        >Logout</a
-      >
+      >Logout</a>
     </div>
   </div>
 </nav>

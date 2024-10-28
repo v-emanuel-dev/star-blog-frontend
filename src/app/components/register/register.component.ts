@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -12,19 +13,19 @@ export class RegisterComponent implements OnInit {
   username: string = '';
   password: string = '';
   confirmPassword: string = '';
-  role: string = 'user'; // Defina um valor padrão para a role, como 'user'
-  message: string | null = null; // Mensagem a ser exibida
-  success: boolean = false;
-  loading: boolean = false; // Loading state
-  isAdmin: boolean = false; // Para verificar se o usuário é admin
+  role: string = 'user';
+  loading: boolean = false;
+  isAdmin: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
-    // Verifique se o usuário é admin
-    this.authService.getUserRole().subscribe(role => {
-      this.isAdmin = (role === 'admin');
-      console.log('User role:', role);
+    this.authService.getUserRole().subscribe((role) => {
+      this.isAdmin = role === 'admin';
     });
   }
 
@@ -32,48 +33,43 @@ export class RegisterComponent implements OnInit {
     return this.authService.isLoggedIn();
   }
 
-  // Método para lidar com o registro
   register(form: NgForm) {
-    console.log('Register method called. Form validity:', form.valid);
-
     if (form.invalid) {
-      this.message = 'Please fill in all fields correctly.';
-      this.success = false;
-      console.warn('Form is invalid. Message:', this.message);
+      this.snackbar('Please fill in all fields correctly.');
       return;
     }
 
-    // Verifique se as senhas coincidem
     if (this.password !== this.confirmPassword) {
-      this.message = 'Passwords do not match.';
-      this.success = false;
-      console.warn('Password mismatch. Message:', this.message);
+      this.snackbar('Passwords do not match.');
       return;
     }
 
     this.loading = true;
-    console.log('Loading state set to true. Initiating registration...');
 
-    this.authService.register(this.email, this.username, this.password, this.role).subscribe(
-      response => {
-        console.log('Registration response received:', response);
-        this.message = 'Registration successful! Please log in.';
-        this.success = true;
-        form.reset(); // Ou limpar campos manualmente se preferir
-
-        setTimeout(() => {
+    this.authService
+      .register(this.email, this.username, this.password, this.role)
+      .subscribe(
+        (response) => {
+          this.snackbar('Registration successful! Please log in.');
+          form.reset();
           this.router.navigate(['/login']);
-        }, 1500);
-      },
-      error => {
-        this.message = error.error.message || 'Registration failed. Please try again.';
-        this.success = false;
-        console.error('Registration error occurred:', error);
-      },
-      () => {
-        this.loading = false;
-        console.log('Loading state set to false. Registration process completed.');
-      }
-    );
+        },
+        (error) => {
+          this.snackbar('Registration failed. Please try again.');
+        },
+        () => {
+          this.loading = false;
+        }
+      );
+  }
+
+  convertToLowercase(): void {
+    this.username = this.username.toLowerCase();
+  }
+
+  snackbar(message: string): void {
+    this.snackBar.open(message, '', {
+      duration: 2000,
+    });
   }
 }

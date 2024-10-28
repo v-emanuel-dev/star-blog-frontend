@@ -1,3 +1,7 @@
+<div class="spinner-container" *ngIf="loading">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
+
 <div class="container d-flex justify-content-center">
   <div
     class="card p-5 mt-5 shadow bg-white rounded w-100"
@@ -9,7 +13,7 @@
       <div class="categories-list mt-5 flex flex-wrap">
         <span
           *ngFor="let category of categories; let last = last"
-          class="badge rounded-full bg-warning me-4 flex items-center shadow-md custom-pill"
+          class="badge rounded-full bg-warning me-4 flex items-center shadow-md custom-pill mt-3"
           style="max-width: fit-content"
         >
           <span class="text-black mr-3">{{ category.name }}</span>

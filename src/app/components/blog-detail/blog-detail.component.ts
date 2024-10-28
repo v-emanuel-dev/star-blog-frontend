@@ -32,6 +32,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   private userNameSubscription: Subscription;
   isModalOpen = false;
   currentCommentId: number | null = null;
+  loading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -69,40 +70,50 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   }
 
   loadPost(): void {
+    this.loading = true; // Inicia o carregamento
+
     this.postService.getPostById(this.postId).subscribe(
       (post) => {
         this.post = post;
         this.post.comments = this.post.comments || [];
+        this.loading = false; // Finaliza o carregamento
       },
       (error) => {
         this.openSnackBar('Error loading post');
+        this.loading = false; // Finaliza o carregamento mesmo em erro
       }
     );
   }
 
   loadComments(): void {
-    this.commentService.comments$.subscribe(
+    this.loading = true; // Inicia o carregamento
+
+    this.commentService.getCommentsByPostId(this.postId).subscribe(
       (comments: Comment[]) => {
         this.comments = comments.sort(
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
+        this.loading = false; // Finaliza o carregamento
       },
       (error) => {
         this.openSnackBar('Error loading comments');
+        this.loading = false; // Finaliza o carregamento mesmo em erro
       }
     );
-
-    this.commentService.getCommentsByPostId(this.postId).subscribe();
   }
 
   loadCategories(): void {
+    this.loading = true; // Inicia o carregamento
+
     this.categoryService.getCategoriesByPostId(this.postId).subscribe(
       (data: Category[]) => {
         this.categories = data;
+        this.loading = false; // Finaliza o carregamento
       },
       (error) => {
         this.openSnackBar('Error fetching categories');
+        this.loading = false; // Finaliza o carregamento mesmo em erro
       }
     );
   }
@@ -125,17 +136,20 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
       username,
     };
 
+    this.loading = true;
+
     this.commentService.addComment(comment).subscribe(
       (newComment) => {
         this.comments.push(newComment);
         this.newComment = '';
+        this.loading = false;
       },
       (error) => {
         this.openSnackBar('Error adding comment');
+        this.loading = false;
       }
     );
   }
-
   editComment(comment: Comment): void {
     this.editCommentId = comment.id ?? null;
     this.editCommentContent = comment.content;
@@ -153,6 +167,8 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
           content: this.editCommentContent,
         };
 
+        this.loading = true;
+
         this.commentService
           .updateComment(this.editCommentId, updatedComment)
           .subscribe(
@@ -164,9 +180,11 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
                 this.comments[index].content = updatedComment.content;
               }
               this.cancelEdit();
+              this.loading = false;
             },
             (error) => {
               this.openSnackBar('Error saving comment');
+              this.loading = false;
             }
           );
       }
@@ -193,13 +211,17 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         postId: this.postId,
       };
 
+      this.loading = true;
+
       this.categoryService.createCategory(category).subscribe(
         () => {
           this.loadCategories();
           this.newCategoryName = '';
+          this.loading = false;
         },
         (error) => {
           this.openSnackBar('Error creating category');
+          this.loading = false;
         }
       );
     } else {
@@ -220,15 +242,19 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         postId: this.postId,
       };
 
+      this.loading = true;
+
       this.categoryService
         .updateCategory(this.editCategoryId, updatedCategory)
         .subscribe(
           () => {
             this.loadCategories();
             this.cancelEditCategory();
+            this.loading = false;
           },
           (error) => {
             this.openSnackBar('Error updating category');
+            this.loading = false;
           }
         );
     } else {

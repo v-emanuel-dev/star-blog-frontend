@@ -1,3 +1,7 @@
+<div class="spinner-container" *ngIf="loading">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
+
 <div class="container d-flex justify-content-center">
   <div
     class="card card-responsive mt-5 shadow bg-white rounded w-100"
@@ -5,64 +9,6 @@
   >
     <div class="card-body">
       <h2 class="text-center m-4 display-4">Sign in</h2>
-      <div
-        *ngIf="message"
-        [ngClass]="{
-          'bg-green-100 border border-green-400 text-green-700': success,
-          'bg-red-100 border border-red-400 text-red-700': !success
-        }"
-        class="mb-4 px-4 py-3 rounded relative"
-        role="alert"
-      >
-        <span class="block sm:inline">{{ message }}</span>
-        <span
-          class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer"
-          (click)="message = null"
-        >
-          <svg
-            class="fill-current h-6 w-6"
-            role="button"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <title>Fechar</title>
-            <path
-              d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"
-            />
-          </svg>
-        </span>
-      </div>
-      <!-- Animação de carregamento -->
-      <div
-        *ngIf="loading"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75"
-      >
-        <button
-          type="button"
-          class="bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center"
-          disabled
-        >
-          <svg
-            class="animate-spin h-5 w-5 mr-3 text-gray-500"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"
-            ></path>
-          </svg>
-          Processing...
-        </button>
-      </div>
       <form (ngSubmit)="login()" class="mx-4">
         <div class="mb-3">
           <label for="username" class="form-label">User</label>
@@ -88,7 +34,6 @@
             placeholder="Enter your password"
           />
         </div>
-
         <button type="submit" class="btn btn-primary w-100">Sign in</button>
         <button
           class="bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow inline-flex items-center justify-center w-full mb-2 mt-2"

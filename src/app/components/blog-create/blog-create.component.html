@@ -1,3 +1,7 @@
+<div class="spinner-container" *ngIf="loading">
+  <mat-spinner [diameter]="50"></mat-spinner>
+</div>
+
 <div class="container d-flex justify-content-center">
   <div class="card mt-5 shadow bg-white rounded w-100">
     <form (ngSubmit)="createPost()" class="m-4">

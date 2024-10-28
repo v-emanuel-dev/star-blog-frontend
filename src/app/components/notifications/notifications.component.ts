@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WebSocketService } from '../../services/websocket.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-notifications',
@@ -9,13 +10,21 @@ import { WebSocketService } from '../../services/websocket.service';
 export class NotificationsComponent implements OnInit {
   notifications: any[] = [];
 
-  constructor(private webSocketService: WebSocketService) {}
+  constructor(private webSocketService: WebSocketService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.webSocketService.notifications$.subscribe((notifications) => {
-      console.log('Notificações recebidas:', notifications); // Log das notificações recebidas
+      this.snackbar('Notifications received:'); // Log das notificações recebidas
       this.notifications = notifications;
-      console.log('Estado das notificações atualizado:', this.notifications); // Log do estado atualizado
+      this.snackbar('Notifications updated successfully');
+    });
+  }
+
+  snackbar(message: string): void {
+    this.snackBar.open(message, '', {
+      duration: 2000,
     });
   }
 }

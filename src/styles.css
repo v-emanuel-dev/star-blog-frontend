@@ -5,7 +5,7 @@
 /* src/styles.css ou src/styles.scss */
 
 body {
-  background-color: #F3F4F6; /* Define o fundo da página */
+  background-color: #f3f4f6; /* Define o fundo da página */
 }
 
 .ck-editor__editable {
@@ -14,9 +14,31 @@ body {
 
 /* Estilo para o conteúdo interno do snackbar */
 .mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
-  background-color: #1F2937 !important; /* Cor de fundo do conteúdo interno */
+  background-color: #1f2937 !important; /* Cor de fundo do conteúdo interno */
 }
 
-  .mat-mdc-snack-bar-container.star-snackbar .mat-mdc-button {
-    color: #FFC107 !important;
-  }
+.mat-mdc-snack-bar-container.star-snackbar .mat-mdc-button {
+  color: #ffc107 !important;
+}
+
+.spinner-container {
+  position: fixed; /* Fixa a posição na tela */
+  top: 0; /* Alinha ao topo */
+  left: 0; /* Alinha à esquerda */
+  width: 100%; /* Largura total */
+  height: 100%; /* Altura total */
+  display: flex; /* Usa flexbox para centralizar */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.7
+  ); /* Fundo semi-transparente (opcional) */
+  z-index: 50; /* Para garantir que o spinner fique acima de outros elementos */
+}
+
+.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #1f2937;
+}
