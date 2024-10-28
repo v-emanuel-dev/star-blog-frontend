@@ -11,3 +11,12 @@ body {
 .ck-editor__editable {
   min-height: 170px;
 }
+
+/* Estilo para o conteúdo interno do snackbar */
+.mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
+  background-color: #1F2937 !important; /* Cor de fundo do conteúdo interno */
+}
+
+  .mat-mdc-snack-bar-container.star-snackbar .mat-mdc-button {
+    color: #FFC107 !important;
+  }
