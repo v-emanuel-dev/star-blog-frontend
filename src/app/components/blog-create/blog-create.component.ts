@@ -73,7 +73,7 @@ export class BlogCreateComponent implements OnInit {
       if (this.currentPostId !== null) {
         this.loadCategories();
       } else {
-        this.openSnackBar('currentPostId is null. Cannot load categories.');
+        this.snackbar('currentPostId is null. Cannot load categories.');
       }
     });
 
@@ -102,12 +102,12 @@ export class BlogCreateComponent implements OnInit {
     const userRole = 'user';
 
     if (!this.title.trim() || !this.content.trim()) {
-      this.openSnackBar('Title and content are required.');
+      this.snackbar('Title and content are required.');
       return;
     }
 
     if (this.selectedCategoryIds.length === 0) {
-      this.openSnackBar('At least one category is required.');
+      this.snackbar('At least one category is required.');
       return;
     }
 
@@ -127,13 +127,13 @@ export class BlogCreateComponent implements OnInit {
     this.postService.createPost(newPost).subscribe({
       next: (response) => {
         this.loading = false;
-        this.openSnackBar('Post created successfully!');
+        this.snackbar('Post created successfully!');
         this.router.navigate(['/blog']);
       },
       error: (error) => {
         this.loading = false;
         console.error('Error creating post:', error);
-        this.openSnackBar('Error creating post.');
+        this.snackbar('Error creating post.');
       },
     });
   }
@@ -156,7 +156,7 @@ export class BlogCreateComponent implements OnInit {
           this.newCategoryName = '';
         },
         error: (error) => {
-          this.openSnackBar('Error creating category:');
+          this.snackbar('Error creating category:');
         },
       });
     }
@@ -172,12 +172,12 @@ export class BlogCreateComponent implements OnInit {
         .updateCategory(this.editingCategory.id, this.editingCategory)
         .subscribe({
           next: () => {
-            this.openSnackBar('Category updated successfully!');
+            this.snackbar('Category updated successfully!');
             this.loadCategories();
             this.editingCategory = null;
           },
           error: (error) => {
-            this.openSnackBar('Failed to update category.');
+            this.snackbar('Failed to update category.');
           },
         });
     }
@@ -194,14 +194,14 @@ export class BlogCreateComponent implements OnInit {
           if (this.currentPostId !== null) {
             this.loadCategories();
           } else {
-            this.openSnackBar(
+            this.snackbar(
               'CurrentPostId is null. Cannot load categories after deletion.'
             );
           }
-          this.openSnackBar('Category deleted successfully!');
+          this.snackbar('Category deleted successfully!');
         },
         error: (error) => {
-          this.openSnackBar('Failed to delete category.');
+          this.snackbar('Failed to delete category.');
         },
       });
     }
@@ -248,22 +248,18 @@ export class BlogCreateComponent implements OnInit {
           this.loadCategories();
         },
         error: (err) => {
-          this.openSnackBar('Failed to remove category.');
+          this.snackbar('Failed to remove category.');
         },
       });
     } else {
-      this.openSnackBar('Invalid Category ID!');
+      this.snackbar('Invalid Category ID!');
     }
   }
 
-  private openSnackBar(
-    message: string,
-    action: string = 'Close',
-    duration: number = 3000
-  ): void {
-    this.snackBar.open(message, action, {
-      panelClass: ['star-snackbar'],
-      duration: duration,
+  snackbar(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'star-snackbar'
     });
   }
 }

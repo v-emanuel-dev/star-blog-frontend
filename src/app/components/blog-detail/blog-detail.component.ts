@@ -64,7 +64,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         this.loadPost();
       },
       (error) => {
-        this.openSnackBar('Error liking/unliking post');
+        this.snackbar('Error liking/unliking post');
       }
     );
   }
@@ -79,7 +79,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         this.loading = false; // Finaliza o carregamento
       },
       (error) => {
-        this.openSnackBar('Error loading post');
+        this.snackbar('Error loading post');
         this.loading = false; // Finaliza o carregamento mesmo em erro
       }
     );
@@ -97,7 +97,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         this.loading = false; // Finaliza o carregamento
       },
       (error) => {
-        this.openSnackBar('Error loading comments');
+        this.snackbar('Error loading comments');
         this.loading = false; // Finaliza o carregamento mesmo em erro
       }
     );
@@ -112,7 +112,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         this.loading = false; // Finaliza o carregamento
       },
       (error) => {
-        this.openSnackBar('Error fetching categories');
+        this.snackbar('Error fetching categories');
         this.loading = false; // Finaliza o carregamento mesmo em erro
       }
     );
@@ -123,7 +123,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
     const username = localStorage.getItem('userName') || 'Anonymous';
 
     if (!this.newComment.trim()) {
-      this.openSnackBar('Comment cannot be empty');
+      this.snackbar('Comment cannot be empty');
       return; // Exit the function if the comment is empty
     }
 
@@ -145,7 +145,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         this.loading = false;
       },
       (error) => {
-        this.openSnackBar('Error adding comment');
+        this.snackbar('Error adding comment');
         this.loading = false;
       }
     );
@@ -183,7 +183,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
               this.loading = false;
             },
             (error) => {
-              this.openSnackBar('Error saving comment');
+              this.snackbar('Error saving comment');
               this.loading = false;
             }
           );
@@ -220,12 +220,12 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
           this.loading = false;
         },
         (error) => {
-          this.openSnackBar('Error creating category');
+          this.snackbar('Error creating category');
           this.loading = false;
         }
       );
     } else {
-      this.openSnackBar('Category name cannot be empty');
+      this.snackbar('Category name cannot be empty');
     }
   }
 
@@ -253,12 +253,12 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
             this.loading = false;
           },
           (error) => {
-            this.openSnackBar('Error updating category');
+            this.snackbar('Error updating category');
             this.loading = false;
           }
         );
     } else {
-      this.openSnackBar('Category name and post ID cannot be empty');
+      this.snackbar('Category name and post ID cannot be empty');
     }
   }
 
@@ -268,7 +268,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         this.loadCategories();
       },
       (error) => {
-        this.openSnackBar('Error deleting category association from post');
+        this.snackbar('Error deleting category association from post');
       }
     );
   }
@@ -306,22 +306,18 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
           this.closeModal();
         },
         error: (err) => {
-          this.openSnackBar('Error deleting comment');
+          this.snackbar('Error deleting comment');
         },
       });
     } else {
-      this.openSnackBar('Invalid comment ID');
+      this.snackbar('Invalid comment ID');
     }
   }
 
-  private openSnackBar(
-    message: string,
-    action: string = 'Close',
-    duration: number = 3000
-  ): void {
-    this.snackBar.open(message, action, {
-      panelClass: ['star-snackbar'],
-      duration: duration,
+  snackbar(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'star-snackbar'
     });
   }
 }

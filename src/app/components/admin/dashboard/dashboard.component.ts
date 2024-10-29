@@ -107,7 +107,7 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.openSnackBar('Failed to load users.');
+        this.snackbar('Failed to load users.');
         this.loading = false;
       },
     });
@@ -120,7 +120,7 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.openSnackBar('Failed to load posts.');
+        this.snackbar('Failed to load posts.');
         this.loading = false;
       },
     });
@@ -138,7 +138,7 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.openSnackBar('Failed to load categories.');
+        this.snackbar('Failed to load categories.');
         this.loading = false;
       },
     });
@@ -152,7 +152,7 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.openSnackBar('Failed to load comments.');
+        this.snackbar('Failed to load comments.');
         this.loading = false;
       },
     });
@@ -174,11 +174,11 @@ export class DashboardComponent implements OnInit {
         .updateUserAdmin(this.editingUser.id, this.editingUser)
         .subscribe({
           next: () => {
-            this.openSnackBar('User updated successfully!');
+            this.snackbar('User updated successfully!');
             this.editingUser = null;
           },
           error: () => {
-            this.openSnackBar('Failed to update user.');
+            this.snackbar('Failed to update user.');
           },
           complete: () => {
             this.loading = false;
@@ -196,11 +196,11 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     this.userService.deleteUser(id).subscribe({
       next: () => {
-        this.openSnackBar('User deleted successfully!');
+        this.snackbar('User deleted successfully!');
         this.loadUsers();
       },
       error: () => {
-        this.openSnackBar('Failed to delete user.');
+        this.snackbar('Failed to delete user.');
       },
       complete: () => {
         this.loading = false;
@@ -220,12 +220,12 @@ export class DashboardComponent implements OnInit {
         .updateCategory(this.editingCategory.id, this.editingCategory)
         .subscribe({
           next: () => {
-            this.openSnackBar('Category updated successfully!');
+            this.snackbar('Category updated successfully!');
             this.loadCategories();
             this.editingCategory = null;
           },
           error: () => {
-            this.openSnackBar('Failed to update category.');
+            this.snackbar('Failed to update category.');
           },
           complete: () => {
             this.loading = false;
@@ -245,14 +245,14 @@ export class DashboardComponent implements OnInit {
         next: (createdCategory) => {
           this.newCategoryName = '';
           this.loadCategories(createdCategory);
-          this.openSnackBar('Category created successfully!');
+          this.snackbar('Category created successfully!');
         },
         error: () => {
-          this.openSnackBar('Failed to create category.');
+          this.snackbar('Failed to create category.');
         },
       });
     } else {
-      this.openSnackBar('Category name cannot be empty.');
+      this.snackbar('Category name cannot be empty.');
     }
   }
 
@@ -264,11 +264,11 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     this.categoryService.deleteCategory(id).subscribe({
       next: () => {
-        this.openSnackBar('Category deleted successfully!');
+        this.snackbar('Category deleted successfully!');
         this.loadCategories();
       },
       error: () => {
-        this.openSnackBar('Failed to delete category.');
+        this.snackbar('Failed to delete category.');
       },
       complete: () => {
         this.loading = false;
@@ -287,12 +287,12 @@ export class DashboardComponent implements OnInit {
         .updateComment(this.editingComment.id, this.editingComment)
         .subscribe({
           next: () => {
-            this.openSnackBar('Comment updated successfully!');
+            this.snackbar('Comment updated successfully!');
             this.loadComments();
             this.editingComment = null;
           },
           error: () => {
-            this.openSnackBar('Failed to update comment.');
+            this.snackbar('Failed to update comment.');
             this.loading = false;
           },
           complete: () => {
@@ -320,14 +320,14 @@ export class DashboardComponent implements OnInit {
         () => {
           this.newComment = '';
           this.loadComments();
-          this.openSnackBar('Comment added successfully!');
+          this.snackbar('Comment added successfully!');
         },
         () => {
-          this.openSnackBar('Failed to add comment. Please try again.');
+          this.snackbar('Failed to add comment. Please try again.');
         }
       );
     } else {
-      this.openSnackBar('Comment cannot be empty.');
+      this.snackbar('Comment cannot be empty.');
     }
   }
 
@@ -339,11 +339,11 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     this.commentService.deleteComment(id).subscribe({
       next: () => {
-        this.openSnackBar('Comment deleted successfully!');
+        this.snackbar('Comment deleted successfully!');
         this.loadComments();
       },
       error: () => {
-        this.openSnackBar('Failed to delete comment.');
+        this.snackbar('Failed to delete comment.');
       },
       complete: () => {
         this.loading = false;
@@ -365,12 +365,12 @@ export class DashboardComponent implements OnInit {
         .updatePost(this.editingPost.id, this.editingPost)
         .subscribe({
           next: () => {
-            this.openSnackBar('Post updated successfully!');
+            this.snackbar('Post updated successfully!');
             this.editingPost = null;
             this.loadPostsAdmin();
           },
           error: (error) => {
-            this.openSnackBar('Failed to update post.');
+            this.snackbar('Failed to update post.');
             this.loading = false; // Finaliza o carregamento
           },
           complete: () => {
@@ -390,12 +390,12 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     this.postService.deletePost(id).subscribe({
       next: (response) => {
-        this.openSnackBar('Post deleted successfully!');
+        this.snackbar('Post deleted successfully!');
         this.editingPost = null;
         this.loadPostsAdmin();
       },
       error: (err) => {
-        this.openSnackBar('Failed to delete post.');
+        this.snackbar('Failed to delete post.');
         this.loading = false; // Finaliza o carregamento
       },
       complete: () => {
@@ -461,7 +461,7 @@ export class DashboardComponent implements OnInit {
       // Executa o serviço de deleção e trata o resultado
       deleteObservable.subscribe({
         next: () => {
-          this.openSnackBar(`${this.itemType} Deleted successfully!`);
+          this.snackbar(`${this.itemType} Deleted successfully!`);
 
           // Recarrega os dados da lista correspondente ao tipo do item
           switch (this.itemType) {
@@ -483,11 +483,11 @@ export class DashboardComponent implements OnInit {
         },
         error: (err) => {
           console.error(`Erro ao deletar ${this.itemType}:`, err);
-          this.openSnackBar(`Failed to delete ${this.itemType}.`);
+          this.snackbar(`Failed to delete ${this.itemType}.`);
         },
       });
     } else {
-      this.openSnackBar('ID or item type are not valid:');
+      this.snackbar('ID or item type are not valid:');
     }
   }
 
@@ -498,14 +498,10 @@ export class DashboardComponent implements OnInit {
     this.loadComments();
   }
 
-  private openSnackBar(
-    message: string,
-    action: string = 'Close',
-    duration: number = 3000
-  ): void {
-    this.snackBar.open(message, action, {
-      panelClass: ['star-snackbar'],
-      duration: duration,
+  snackbar(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'star-snackbar'
     });
   }
 }

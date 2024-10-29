@@ -99,7 +99,7 @@ export class BlogEditComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.openSnackBar('Failed to load post.');
+        this.snackbar('Failed to load post.');
         this.router.navigate(['/blog']);
         this.loading = false;
       },
@@ -128,12 +128,12 @@ export class BlogEditComponent implements OnInit {
 
     this.postService.updatePost(this.postId, updatedPost).subscribe(
       () => {
-        this.openSnackBar('Update successful!');
+        this.snackbar('Update successful!');
         this.loading = false;
         this.router.navigate(['/blog']);
       },
       (error) => {
-        this.openSnackBar('Failed to update post.');
+        this.snackbar('Failed to update post.');
         this.loading = false;
       }
     );
@@ -149,7 +149,7 @@ export class BlogEditComponent implements OnInit {
         this.loading = false;
       },
       (error) => {
-        this.openSnackBar('Error retrieving all categories:');
+        this.snackbar('Error retrieving all categories:');
         this.loading = false;
       }
     );
@@ -164,7 +164,7 @@ export class BlogEditComponent implements OnInit {
         this.loading = false;
       },
       (error) => {
-        this.openSnackBar('Error retrieving categories:');
+        this.snackbar('Error retrieving categories:');
         this.loading = false;
       }
     );
@@ -214,11 +214,11 @@ export class BlogEditComponent implements OnInit {
     this.categoryService.deleteCategory(categoryId).subscribe({
       next: () => {
         this.loadCategories();
-        this.openSnackBar('Category deleted successfully!');
+        this.snackbar('Category deleted successfully!');
         this.closeModal();
       },
       error: (error) => {
-        this.openSnackBar('Failed to delete category.');
+        this.snackbar('Failed to delete category.');
       },
       complete: () => {
         setTimeout(() => {}, 2000);
@@ -240,14 +240,10 @@ export class BlogEditComponent implements OnInit {
     this.currentCategoryId = null;
   }
 
-  private openSnackBar(
-    message: string,
-    action: string = 'Close',
-    duration: number = 3000
-  ): void {
-    this.snackBar.open(message, action, {
-      panelClass: ['star-snackbar'],
-      duration: duration,
+  snackbar(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'star-snackbar'
     });
   }
 }

@@ -197,8 +197,9 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   snackbar(message: string): void {
-    this.snackBar.open(message, '', {
-      duration: 2000,
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'star-snackbar'
     });
   }
 }
