@@ -30,7 +30,7 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedImage: File | null = null;
   selectedImagePreview: SafeUrl | null = null;
   profilePicture: string | null = null;
-  defaultPicture: string = 'http://localhost:4200/assets/img/default-profile.png';
+  defaultPicture: string = 'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png';
   isAdmin: boolean = false;
   loading: boolean = false;
 
