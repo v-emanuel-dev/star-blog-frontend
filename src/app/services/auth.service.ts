@@ -105,7 +105,7 @@ export class AuthService {
           } else {
             console.log('No profile picture found, setting to default.');
             profilePicUrl =
-              'http://localhost:4200/assets/img/default-profile.png';
+              'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png';
             localStorage.setItem('profilePicture', profilePicUrl);
           }
 
