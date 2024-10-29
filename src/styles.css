@@ -41,6 +41,7 @@ body {
   padding: 7px;
   border-radius: 8px;
   color: white;
+  position: relative;
 }
 
 .spinner-container {
