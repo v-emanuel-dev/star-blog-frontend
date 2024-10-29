@@ -10,39 +10,6 @@ body {
   min-height: 170px;
 }
 
-.mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
-  background-color: #1F2937 !important;
-}
-
-.mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__label {
-  color: #FFFFFF !important;
-}
-
-.mat-mdc-snack-bar-container.star-snackbar .mat-mdc-button {
-  color: #FFC107 !important;
-}
-
-.mat-mdc-snack-bar-container.star-snackbar {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  position: fixed;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-}
-
-.mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
-  background-color: #1F2937 !important;
-  width: auto;
-  margin: 0 auto;
-  padding: 7px;
-  border-radius: 8px;
-  color: white;
-  position: relative;
-}
-
 .spinner-container {
   position: fixed;
   top: 0;
