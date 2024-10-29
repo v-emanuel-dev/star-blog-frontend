@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { WebSocketService } from '../../services/websocket.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { WebSocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.css']
+  styleUrls: ['./notifications.component.css'],
 })
 export class NotificationsComponent implements OnInit {
   notifications: any[] = [];
 
-  constructor(private webSocketService: WebSocketService,
+  constructor(
+    private webSocketService: WebSocketService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -23,8 +24,9 @@ export class NotificationsComponent implements OnInit {
   }
 
   snackbar(message: string): void {
-    this.snackBar.open(message, '', {
-      duration: 2000,
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'star-snackbar',
     });
   }
 }
