@@ -35,8 +35,7 @@ body {
 
 .mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
   background-color: #1F2937 !important;
-  width: 80%;
-  max-width: 400px;
+  width: auto;
   margin: 0 auto;
   padding: 7px;
   border-radius: 8px;
