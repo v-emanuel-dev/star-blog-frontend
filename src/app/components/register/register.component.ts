@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   email: string = '';
   username: string = '';
   password: string = '';
@@ -17,6 +18,8 @@ export class RegisterComponent implements OnInit {
   loading: boolean = false;
   isAdmin: boolean = false;
 
+  private userDetailsSubscription: Subscription = new Subscription();
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -24,8 +27,12 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.getUserRole().subscribe((role) => {
-      this.isAdmin = role === 'admin';
+    this.userDetailsSubscription = this.authService.userDetails$.subscribe((details) => {
+      if (details && details.userRole) {
+        this.isAdmin = details.userRole === 'admin';
+      } else {
+        this.isAdmin = false;
+      }
     });
   }
 
@@ -72,5 +79,9 @@ export class RegisterComponent implements OnInit {
       duration: 3000,
       panelClass: 'star-snackbar'
     });
+  }
+
+  ngOnDestroy() {
+    this.userDetailsSubscription.unsubscribe();
   }
 }

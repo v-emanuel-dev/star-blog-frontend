@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Category } from '../../models/category.model';
 import { Comment } from '../../models/comment.model';
 import { Post } from '../../models/post.model';
@@ -29,10 +29,11 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   newCategoryName: string = '';
   editCategoryId: number | null = null;
   editCategoryName: string = '';
-  private userNameSubscription: Subscription;
   isModalOpen = false;
   currentCommentId: number | null = null;
   loading: boolean = false;
+
+  private userDetailsSubscription: Subscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -42,9 +43,13 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private snackBar: MatSnackBar
   ) {
-    this.userNameSubscription = this.authService.userName$.subscribe((name) => {
-      this.userName = name;
-    });
+    this.userDetailsSubscription = this.authService.userDetails$
+      .pipe(filter((details) => details !== null)) // Ignora valores nulos
+      .subscribe((details) => {
+        if (details && details.username) {
+          this.userName = details.username; // Agora pegamos o nome do userDetails
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -278,10 +283,6 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
     this.editCategoryName = '';
   }
 
-  ngOnDestroy(): void {
-    this.userNameSubscription.unsubscribe();
-  }
-
   openCommentModal(commentId: number): void {
     this.currentCommentId = commentId;
     this.isModalOpen = true;
@@ -314,10 +315,14 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  ngOnDestroy(): void {
+    this.userDetailsSubscription.unsubscribe();
+  }
+
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 }

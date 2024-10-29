@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { saveAs } from 'file-saver';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Category } from '../../models/category.model';
 import { Post } from '../../models/post.model';
 import { AuthService } from '../../services/auth.service';
@@ -29,7 +29,8 @@ export class BlogListComponent implements OnInit {
   isLoadingCategories: boolean = true;
   isAdmin: boolean = false;
   userRole: string | null = null;
-  private roleSubscription: Subscription = new Subscription();
+
+  private userDetailsSubscription: Subscription = new Subscription();
 
   constructor(
     private postService: PostService,
@@ -43,10 +44,14 @@ export class BlogListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.roleSubscription = this.authService.userRole$.subscribe((role) => {
-      this.userRole = role;
-      this.cd.detectChanges();
-    });
+    this.userDetailsSubscription = this.authService.userDetails$
+      .pipe(filter((details) => details !== null))
+      .subscribe((details) => {
+        if (details && details.userRole) {
+          this.userRole = details.userRole;
+          this.cd.detectChanges();
+        }
+      });
 
     this.route.queryParams.subscribe((params) => {
       const profileImageUrl = params['profileImage'];
@@ -110,7 +115,7 @@ export class BlogListComponent implements OnInit {
               : this.posts.filter((post) => post.visibility === 'public');
 
             this.updatePostsTitle();
-            this.loading = false; // Atualiza o loading imediatamente
+            this.loading = false;
 
             this.posts.forEach((post) => {
               if (post.id !== undefined) {
@@ -122,13 +127,13 @@ export class BlogListComponent implements OnInit {
           },
           error: (error) => {
             this.snackbar('Error fetching posts');
-            this.loading = false; // Atualiza o loading imediatamente
+            this.loading = false;
           },
         });
       },
       (error) => {
         this.snackbar('Error fetching user role.');
-        this.loading = false; // Atualiza o loading imediatamente
+        this.loading = false;
       }
     );
   }

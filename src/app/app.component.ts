@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ImageService } from './services/image.service';
 import { AuthService } from './services/auth.service';
+import { ImageService } from './services/image.service';
 
 @Component({
   selector: 'app-root',
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
 
         // Atualize o BehaviorSubject no AuthService com o novo papel do usuário
         this.authService.setUserRole(userRole);
-        this.authService.setUserDetails({ userId, username, profilePicture });
+        this.authService.setUserDetails({ userRole, userId, email, username, profilePicture });
       }
     });
   }

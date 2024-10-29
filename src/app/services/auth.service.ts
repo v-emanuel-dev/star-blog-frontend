@@ -11,17 +11,11 @@ import { WebSocketService } from './websocket.service';
 export class AuthService {
   private baseUrl = 'https://blog-backend-production-c203.up.railway.app/api/auth';
 
-  private userNameSubject = new BehaviorSubject<string | undefined>(
-    localStorage.getItem('userName') || undefined // Inicializa com o valor do localStorage
-  );
+
 
   private currentUserIdSubject = new BehaviorSubject<number | null>(
     this.getLoggedUserId()
   ); // Adicionando a BehaviorSubject para o ID do usuário
-
-  userName$: Observable<string | undefined> =
-    this.userNameSubject.asObservable();
-  userId$: Observable<number | null> = this.currentUserIdSubject.asObservable(); // Para expor o ID do usuário como um Observable
 
   private userLoggedInSubject = new BehaviorSubject<boolean>(false);
   userLoggedIn$ = this.userLoggedInSubject.asObservable();
@@ -29,7 +23,7 @@ export class AuthService {
   private profileImageUrlSubject = new BehaviorSubject<string | null>(null);
   profileImageUrl$ = this.profileImageUrlSubject.asObservable();
 
-  private userRoleSubject = new BehaviorSubject<string>(''); // Valor inicial como string vazia
+  private userRoleSubject = new BehaviorSubject<string>('');
   userRole$ = this.userRoleSubject.asObservable();
 
   private userDetailsSubject = new BehaviorSubject<any>(null);
@@ -46,8 +40,25 @@ export class AuthService {
       this.userRoleSubject.next(savedRole);
     }
 
-    const storedRole = localStorage.getItem('userRole') || ''; // Usando uma string vazia como fallback
-    this.userRoleSubject.next(storedRole); // Inicializa com o valor armazenado no localStorage
+    const storedRole = localStorage.getItem('userRole') || '';
+    this.userRoleSubject.next(storedRole);
+
+    // Carregar os detalhes do usuário do localStorage
+    const role = localStorage.getItem('userRole') || '';
+    const userId = localStorage.getItem('userId');
+    const email = localStorage.getItem('email');
+    const username = localStorage.getItem('username');
+    const profilePicture = localStorage.getItem('profilePicture');
+
+    if (userId && email && username && profilePicture) {
+      this.userDetailsSubject.next({
+        role,
+        userId,
+        email,
+        username,
+        profilePicture,
+      });
+    }
   }
 
   setUserRole(role: string) {
@@ -58,8 +69,12 @@ export class AuthService {
     this.userDetailsSubject.next(details);
   }
 
+  clearUserDetails() {
+    this.userDetailsSubject.next(null);
+  }
+
   resetUserRole(): void {
-    this.userRoleSubject.next(''); // Reseta o papel do usuário
+    this.userRoleSubject.next('');
   }
 
   login(email: string, password: string) {
@@ -67,18 +82,15 @@ export class AuthService {
       .post<any>(`${this.baseUrl}/login`, { email, password })
       .pipe(
         tap((response) => {
-          console.log('Login response:', response); // Log da resposta do login
-          // Armazenar informações no localStorage
+          console.log('Login response:', response);
           localStorage.setItem('accessToken', response.accessToken);
           localStorage.setItem('userName', response.username);
           localStorage.setItem('email', response.email);
           localStorage.setItem('userId', response.userId);
-          localStorage.setItem('userRole', response.userRole); // Armazenar o papel do usuário
+          localStorage.setItem('userRole', response.userRole);
 
-          // Lógica para armazenar a URL da imagem do perfil
           let profilePicUrl = response.profilePicture;
 
-          // Verifique se a URL da imagem de perfil é válida
           if (profilePicUrl) {
             profilePicUrl = profilePicUrl.replace(/\\/g, '/');
             if (!profilePicUrl.startsWith('http')) {
@@ -91,23 +103,31 @@ export class AuthService {
             localStorage.setItem('profilePicture', profilePicUrl);
           }
 
-          // Notificações
+          // Atualiza os subjects para refletir as informações do usuário
           this.profileImageUrlSubject.next(profilePicUrl);
           this.imageService.updateProfilePic(profilePicUrl);
-          this.userNameSubject.next(response.username);
           this.currentUserIdSubject.next(response.userId);
           this.userLoggedInSubject.next(true);
-          this.websocketService.fetchNotifications(response.userId);
-
-          // Atualiza o papel do usuário
           this.setUserRole(response.userRole);
 
-          // Redirecionamento baseado no papel do usuário
+          // Atualiza o userDetailsSubject com todos os detalhes do usuário
+          this.userDetailsSubject.next({
+            userRole: response.userRole,
+            userId: response.userId,
+            email: response.email,
+            username: response.username,
+            profilePicture: profilePicUrl,
+          });
+
+          // Navegação com base na função do usuário
           if (response.userRole === 'admin') {
             this.router.navigate(['/admin']);
           } else {
             this.router.navigate(['/blog']);
           }
+
+          // Inicia a busca de notificações com base no ID do usuário
+          this.websocketService.fetchNotifications(response.userId);
         })
       );
   }
@@ -115,7 +135,7 @@ export class AuthService {
   updateProfileImageUrl(url: string): void {
     localStorage.setItem('profilePicture', url);
     this.profileImageUrlSubject.next(url);
-    console.log('Profile picture updated in localStorage:', url); // Adicione este log
+    console.log('Profile picture updated in localStorage:', url);
   }
 
   register(
@@ -136,33 +156,25 @@ export class AuthService {
     return this.userRoleSubject.asObservable();
   }
 
-  getUserName(): string {
-    // Obtém o valor atual do BehaviorSubject. Se for indefinido, retorna 'Visitor'.
-    const username = this.userNameSubject.value || 'Visitor';
-    console.log(`Username retrieved: ${username}`); // Log para verificar o nome do usuário
-    return username; // Retorna o nome do usuário
-  }
-
   getUserId(): number | null {
-    return this.currentUserIdSubject.value; // Retorna o ID do usuário logado ou null se não estiver logado
+    return this.currentUserIdSubject.value;
   }
 
-  // Método para obter o token do localStorage
   getToken(): string | null {
-    return localStorage.getItem('token'); // Certifique-se de que o token está armazenado com a chave 'token'
+    return localStorage.getItem('token');
   }
 
   getLoggedUserId(): number | null {
-    const storedUserId = localStorage.getItem('userId'); // ou o que você usar para armazenar o ID do usuário
-    return storedUserId ? parseInt(storedUserId, 10) : null; // Retorna o ID do usuário
+    const storedUserId = localStorage.getItem('userId');
+    return storedUserId ? parseInt(storedUserId, 10) : null;
   }
 
   getCurrentUserId(): number | null {
-    return this.currentUserIdSubject.value; // Retorna o ID do usuário logado ou null se não estiver logado
+    return this.currentUserIdSubject.value;
   }
 
   isLoggedIn(): boolean {
-    return localStorage.getItem('token') !== null; // Corrigido para verificar 'accessToken'
+    return localStorage.getItem('token') !== null;
   }
 
   setProfileImageUrl(url: string): void {
@@ -174,17 +186,14 @@ export class AuthService {
   }
 
   logout() {
-    // Limpa todo o localStorage
     localStorage.clear();
 
     this.userLoggedInSubject.next(false);
-    this.userNameSubject.next(undefined);
-    this.currentUserIdSubject.next(null); // Limpando o ID do usuário
+    this.currentUserIdSubject.next(null);
     this.profileImageUrlSubject.next(null);
-    this.imageService.clearProfilePic(); // Notificar o UserService sobre a remoção da imagem
-    this.userRoleSubject.next('user'); // Método para resetar o papel
-
-    // Redirecionando para a página de login após o logout
+    this.userDetailsSubject.next(null);
+    this.imageService.clearProfilePic();
+    this.userRoleSubject.next('user');
     this.router.navigate(['/login']);
   }
 }

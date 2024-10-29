@@ -9,7 +9,6 @@ import {
 import { NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SafeUrl } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { User } from '../../models/user.model';
 import { AuthService } from '../../services/auth.service';
@@ -22,6 +21,7 @@ import { UserService } from './../../services/user.service';
   styleUrls: ['./user-profile.component.css'],
 })
 export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
+  userId: string | null = null;
   username: string = '';
   email: string | null = null;
   password: string = '';
@@ -30,16 +30,14 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedImage: File | null = null;
   selectedImagePreview: SafeUrl | null = null;
   profilePicture: string | null = null;
-  defaultPicture: string =
-    'http://localhost:4200/assets/img/default-profile.png';
+  defaultPicture: string = 'http://localhost:4200/assets/img/default-profile.png';
   isAdmin: boolean = false;
   loading: boolean = false;
 
-  private roleSubscription: Subscription = new Subscription();
+  private userDetailsSubscription: Subscription = new Subscription();
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private userService: UserService,
     private imageService: ImageService,
     private cd: ChangeDetectorRef,
@@ -47,12 +45,18 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.roleSubscription = this.authService.userRole$.subscribe((role) => {
-      this.role = role;
-      this.isAdmin = role === 'admin';
-      this.cd.detectChanges();
-      this.snackbar(`User role: ${role}`);
-    });
+    this.userDetailsSubscription = this.authService.userDetails$.subscribe(
+      (details) => {
+        if (details) {
+          this.updateUserData(details);
+          this.role = details.role;
+          this.isAdmin = this.role === 'admin';
+          this.cd.detectChanges();
+        } else {
+          this.snackbar('User details are null while loading user data.');
+        }
+      }
+    );
 
     this.loadUserData();
     this.subscribeToImageUpdates();
@@ -63,30 +67,24 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadUserData(): void {
-    this.loading = true; // Inicia o carregamento
-    const userId = this.authService.getUserId();
+    this.loading = true;
 
-    if (userId !== null) {
-      this.userService.getUserById(userId).subscribe(
-        (user) => {
-          this.updateUserData(user);
-          this.loading = false; // Finaliza o carregamento ao obter os dados com sucesso
-        },
-        (error) => {
-          this.snackbar('Failed to load user data.');
-          this.loading = false; // Finaliza o carregamento em caso de erro
+    this.userDetailsSubscription = this.authService.userDetails$.subscribe(
+      (details) => {
+        if (details) {
+          this.updateUserData(details);
+          this.loading = false;
+        } else {
+          this.loading = false;
         }
-      );
-    } else {
-      this.snackbar('User ID is null while loading user data.');
-      this.loading = false; // Finaliza o carregamento se o ID do usuário for nulo
-    }
+      }
+    );
   }
 
   private updateUserData(user: User): void {
     this.username = user.username || '';
     this.email = user.email || '';
-    this.role = user.role ?? 'user';
+    this.role = user.role || 'user';
     this.isAdmin = this.role === 'admin';
   }
 
@@ -125,7 +123,7 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.loading = true; // Inicia o carregamento
+    this.loading = true;
 
     this.userService
       .updateUser(
@@ -140,18 +138,15 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(
         (response) => {
           this.handleUserUpdateSuccess(response);
-          this.loading = false; // Finaliza o carregamento ao obter resposta com sucesso
+          this.loading = false;
           if (response.profilePicture) {
-            const formattedProfilePic = response.profilePicture.replace(
-              /\\/g,
-              '/'
-            );
+            const formattedProfilePic = response.profilePicture.replace(/\\/g, '/');
             this.imageService.updateProfilePic(formattedProfilePic);
           }
         },
         (error) => {
           this.handleUserUpdateError(error);
-          this.loading = false; // Finaliza o carregamento em caso de erro
+          this.loading = false;
         }
       );
   }
@@ -191,15 +186,12 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.roleSubscription) {
-      this.roleSubscription.unsubscribe();
-    }
+    this.userDetailsSubscription.unsubscribe();
   }
 
   snackbar(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      panelClass: 'star-snackbar'
+    this.snackBar.open(message, '', {
+      duration: 2000,
     });
   }
 }

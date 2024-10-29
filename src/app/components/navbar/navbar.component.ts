@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { WebSocketService } from '../../services/websocket.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
@@ -25,7 +25,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   defaultProfilePicture: string = 'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png';
   userRole: string | null = null;
 
-  private roleSubscription: Subscription = new Subscription();
+  private userDetailsSubscription: Subscription = new Subscription();
   private notificationsSubscription: Subscription | undefined;
   private subscription: Subscription = new Subscription();
 
@@ -41,12 +41,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.roleSubscription = this.authService.userRole$.subscribe((role) => {
-      this.userRole = role;
-      this.cd.detectChanges();
-    });
-
-    this.userRole = localStorage.getItem('userRole');
+    this.userDetailsSubscription = this.authService.userDetails$
+      .pipe(filter((details) => details !== null)) // Ignora valores nulos
+      .subscribe((details) => {
+        console.log('User details received:', details); // Log para ver os detalhes do usuário recebidos
+        if (details && details.userRole) {
+          this.userRole = details.userRole;
+          console.log('User role set to:', this.userRole); // Log para ver a role
+          this.cd.detectChanges();
+        } else {
+          console.log('User details are missing or invalid.');
+        }
+      });
 
     this.imageService.profilePic$.subscribe((pic) => {
       this.profilePicture = pic || this.defaultProfilePicture;
@@ -183,13 +189,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.userDetailsSubscription.unsubscribe();
     document.removeEventListener('click', this.closeDropdowns.bind(this));
   }
 
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 }
