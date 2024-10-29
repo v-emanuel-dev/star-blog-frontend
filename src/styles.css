@@ -23,11 +23,14 @@ body {
 }
 
 .mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
-  background-color: #1F2937 !important;
-  width: 300px;
-  max-width: 50%;
-  margin: 0 auto;
+  background-color: #1F2937 !important; /* Cor de fundo */
+  width: 80%; /* Largura da snackbar */
+  max-width: 400px; /* Limita a largura máxima */
+  margin: 0 auto; /* Centraliza */
+  padding: 16px; /* Ajusta o padding */
+  border-radius: 8px; /* Define bordas arredondadas */
 }
+
 
 
 .spinner-container {
