@@ -22,13 +22,25 @@ body {
   color: #FFC107 !important;
 }
 
+.mat-mdc-snack-bar-container.star-snackbar {
+  display: flex; /* Usar flexbox para centralização */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: flex-end; /* Alinha na parte inferior */
+  position: fixed; /* Fixa na tela */
+  bottom: 20px; /* Distância do fundo */
+  left: 0; /* Inicia no canto esquerdo */
+  right: 0; /* Para se estender até o canto direito */
+  z-index: 1000; /* Garante que a snackbar fique acima de outros elementos */
+}
+
 .mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
   background-color: #1F2937 !important; /* Cor de fundo */
   width: 80%; /* Largura da snackbar */
   max-width: 400px; /* Limita a largura máxima */
   margin: 0 auto; /* Centraliza */
-  padding: 16px; /* Ajusta o padding */
+  padding: 10px; /* Ajusta o padding */
   border-radius: 8px; /* Define bordas arredondadas */
+  color: white; /* Define a cor do texto */
 }
 
 
