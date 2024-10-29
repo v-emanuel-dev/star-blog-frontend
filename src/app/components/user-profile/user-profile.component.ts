@@ -47,13 +47,16 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.userDetailsSubscription = this.authService.userDetails$.subscribe(
       (details) => {
+        console.log('ngOnInit - userDetails$', details); // Log dos detalhes do usuário carregados no ngOnInit
         if (details) {
           this.updateUserData(details);
           this.role = details.role;
           this.isAdmin = this.role === 'admin';
+          console.log('User role:', this.role, 'Is Admin:', this.isAdmin);
           this.cd.detectChanges();
         } else {
           this.snackbar('User details are null while loading user data.');
+          console.log('User details are null in ngOnInit');
         }
       }
     );
@@ -68,13 +71,16 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private loadUserData(): void {
     this.loading = true;
+    console.log('loadUserData - loading user data');
 
     this.userDetailsSubscription = this.authService.userDetails$.subscribe(
       (details) => {
+        console.log('loadUserData - userDetails$', details); // Log dos detalhes do usuário durante o carregamento de dados
         if (details) {
           this.updateUserData(details);
           this.loading = false;
         } else {
+          console.warn('User details are null in loadUserData');
           this.loading = false;
         }
       }
@@ -86,14 +92,17 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     this.email = user.email || '';
     this.role = user.role || 'user';
     this.isAdmin = this.role === 'admin';
+    console.log('updateUserData - Updated user data:', { username: this.username, email: this.email, role: this.role, isAdmin: this.isAdmin });
   }
 
   private subscribeToImageUpdates(): void {
     this.imageService.profilePic$.subscribe((pic) => {
       this.profilePicture = pic || this.defaultPicture;
+      console.log('subscribeToImageUpdates - Profile picture updated:', this.profilePicture);
       this.cd.detectChanges();
     });
   }
+
 
   onImageError() {
     this.profilePicture = this.defaultPicture;
