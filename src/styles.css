@@ -10,6 +10,26 @@ body {
   min-height: 170px;
 }
 
+.mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
+  background-color: #1F2937 !important;
+}
+
+.mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__label {
+  color: #FFFFFF !important;
+}
+
+.mat-mdc-snack-bar-container.star-snackbar .mat-mdc-button {
+  color: #FFC107 !important;
+}
+
+.mat-mdc-snack-bar-container.star-snackbar .mdc-snackbar__surface {
+  background-color: #1F2937 !important;
+  width: 300px;
+  max-width: 50%;
+  margin: 0 auto;
+}
+
+
 .spinner-container {
   position: fixed;
   top: 0;
