@@ -144,12 +144,13 @@ export class BlogEditComponent implements OnInit {
 
     this.categoryService.getAllCategories().subscribe(
       (data: Category[]) => {
-        this.categories = data;
-        this.loadCategoriesByPostId(this.postId);
+        // Ordena as categorias em ordem decrescente de id (assumindo que maiores ids são mais recentes)
+        this.categories = data.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+        this.loadCategoriesByPostId(this.postId); // Carrega as categorias relacionadas ao post
         this.loading = false;
       },
       (error) => {
-        this.snackbar('Error retrieving all categories:');
+        this.snackbar('Error retrieving all categories');
         this.loading = false;
       }
     );
@@ -160,15 +161,17 @@ export class BlogEditComponent implements OnInit {
 
     this.categoryService.getCategoriesByPostId(postId).subscribe(
       (data: Category[]) => {
-        this.selectedCategoryIds = data.map((cat) => cat.id!);
+        // Mapeia para obter apenas os ids, tratando `id` potencialmente `undefined`
+        this.selectedCategoryIds = data.map((cat) => cat.id ?? 0);
         this.loading = false;
       },
       (error) => {
-        this.snackbar('Error retrieving categories:');
+        this.snackbar('Error retrieving categories by post');
         this.loading = false;
       }
     );
   }
+
 
   onCategoryChange(event: Event, categoryId: number): void {
     event.preventDefault();

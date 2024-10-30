@@ -132,9 +132,12 @@ export class DashboardComponent implements OnInit {
     this.categoryService.getAllCategories().subscribe({
       next: (categories) => {
         if (newCategory) {
-          categories.unshift(newCategory);
+          categories.unshift(newCategory); // Adiciona a nova categoria no início da lista
         }
-        this.categories$ = of(categories);
+        // Ordena as categorias após adicionar a nova, caso haja uma ordem específica desejada
+        this.categories$ = of(
+          categories.sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
+        );
         this.loading = false;
       },
       error: () => {
@@ -482,7 +485,6 @@ export class DashboardComponent implements OnInit {
           this.closeModal(); // Fecha o modal após a deleção
         },
         error: (err) => {
-          console.error(`Erro ao deletar ${this.itemType}:`, err);
           this.snackbar(`Failed to delete ${this.itemType}.`);
         },
       });
@@ -501,7 +503,7 @@ export class DashboardComponent implements OnInit {
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 }

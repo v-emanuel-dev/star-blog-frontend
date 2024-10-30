@@ -113,12 +113,13 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
 
     this.categoryService.getCategoriesByPostId(this.postId).subscribe(
       (data: Category[]) => {
-        this.categories = data;
+        // Ordena as categorias por id, assumindo que id mais alto significa categoria mais recente
+        this.categories = data.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
         this.loading = false; // Finaliza o carregamento
       },
       (error) => {
         this.snackbar('Error fetching categories');
-        this.loading = false; // Finaliza o carregamento mesmo em erro
+        this.loading = false; // Finaliza o carregamento mesmo em caso de erro
       }
     );
   }

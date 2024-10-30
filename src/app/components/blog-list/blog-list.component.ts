@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { saveAs } from 'file-saver';
-import { filter, Subscription, tap } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Category } from '../../models/category.model';
 import { Post } from '../../models/post.model';
 import { AuthService } from '../../services/auth.service';
@@ -47,13 +47,12 @@ export class BlogListComponent implements OnInit {
   ngOnInit(): void {
     this.userDetailsSubscription = this.authService.userDetails$
       .pipe(
-        filter(details => details !== null) // Filtrar para garantir que não é null
+        filter((details) => details !== null)
       )
-      .subscribe(details => {
-        this.userRole = details.userRole; // Acesso à role do usuário
-        this.username = details.username; // Acesso ao nome do usuário
+      .subscribe((details) => {
+        this.userRole = details.userRole;
+        this.username = details.username;
       });
-
 
     this.route.queryParams.subscribe((params) => {
       const profileImageUrl = params['profileImage'];
@@ -85,7 +84,7 @@ export class BlogListComponent implements OnInit {
       (data: Category[]) => {
         const post = this.posts.find((p) => p.id === postId);
         if (post) {
-          post.categories = data;
+          post.categories = data.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
         }
       },
       (error) => {
@@ -97,47 +96,57 @@ export class BlogListComponent implements OnInit {
   getPosts(): void {
     this.loading = true;
 
-    this.authService.getUserRole().subscribe(
-      (userRole) => {
+    this.authService.getUserRole().subscribe({
+      next: (userRole) => {
         const isAdmin = userRole === 'admin';
-        const postsObservable = isAdmin
-          ? this.postService.getPostsAdmin()
-          : this.postService.getPosts();
+        console.log('isAdmin:', isAdmin);
 
-        postsObservable.subscribe({
-          next: (data: Post[]) => {
-            this.posts = data.sort((a, b) => {
-              const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-              const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-              return dateB - dateA;
-            });
+        setTimeout(() => {
+          const postsObservable = isAdmin
+            ? this.postService.getPostsAdmin()
+            : this.postService.getPosts();
 
-            this.filteredPosts = this.isLoggedIn
-              ? this.posts
-              : this.posts.filter((post) => post.visibility === 'public');
+          postsObservable.subscribe({
+            next: (data: Post[]) => {
+              this.posts = data.sort((a, b) => {
+                const dateA = a.created_at
+                  ? new Date(a.created_at).getTime()
+                  : 0;
+                const dateB = b.created_at
+                  ? new Date(b.created_at).getTime()
+                  : 0;
+                return dateB - dateA;
+              });
 
-            this.updatePostsTitle();
-            this.loading = false;
+              this.filteredPosts = this.isLoggedIn
+                ? this.posts
+                : this.posts.filter((post) => post.visibility === 'public');
 
-            this.posts.forEach((post) => {
-              if (post.id !== undefined) {
-                this.loadCategories(post.id);
-              } else {
-                this.snackbar('Post ID is undefined');
-              }
-            });
-          },
-          error: (error) => {
-            console.log('Error fetching posts');
-            this.loading = false;
-          },
-        });
+              this.updatePostsTitle();
+              this.loading = false;
+
+              this.posts.forEach((post) => {
+                if (post.id !== undefined) {
+                  this.loadCategories(post.id);
+                } else {
+                  this.snackbar('Post ID is undefined');
+                }
+              });
+            },
+            error: (error) => {
+              this.snackbar(
+                'Error fetching posts. Please check your permissions.'
+              );
+              this.loading = false;
+            },
+          });
+        }, 10);
       },
-      (error) => {
-        this.snackbar('Error fetching user role.');
+      error: (error) => {
+        this.snackbar('Error fetching user role.'); // Mensagem de erro ao buscar papel
         this.loading = false;
-      }
-    );
+      },
+    });
   }
 
   filterPosts(): void {
@@ -238,7 +247,7 @@ export class BlogListComponent implements OnInit {
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 }
