@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { saveAs } from 'file-saver';
-import { filter, Subscription } from 'rxjs';
+import { filter, Subscription, tap } from 'rxjs';
 import { Category } from '../../models/category.model';
 import { Post } from '../../models/post.model';
 import { AuthService } from '../../services/auth.service';
@@ -29,6 +29,7 @@ export class BlogListComponent implements OnInit {
   isLoadingCategories: boolean = true;
   isAdmin: boolean = false;
   userRole: string | null = null;
+  username: string | null = null;
 
   private userDetailsSubscription: Subscription = new Subscription();
 
@@ -45,13 +46,14 @@ export class BlogListComponent implements OnInit {
 
   ngOnInit(): void {
     this.userDetailsSubscription = this.authService.userDetails$
-      .pipe(filter((details) => details !== null))
-      .subscribe((details) => {
-        if (details && details.userRole) {
-          this.userRole = details.userRole;
-          this.cd.detectChanges();
-        }
+      .pipe(
+        filter(details => details !== null) // Filtrar para garantir que não é null
+      )
+      .subscribe(details => {
+        this.userRole = details.userRole; // Acesso à role do usuário
+        this.username = details.username; // Acesso ao nome do usuário
       });
+
 
     this.route.queryParams.subscribe((params) => {
       const profileImageUrl = params['profileImage'];
@@ -126,7 +128,7 @@ export class BlogListComponent implements OnInit {
             });
           },
           error: (error) => {
-            this.snackbar('Error fetching posts');
+            console.log('Error fetching posts');
             this.loading = false;
           },
         });

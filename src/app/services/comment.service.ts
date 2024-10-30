@@ -6,7 +6,8 @@ import {
   catchError,
   tap,
   throwError,
-  of
+  of,
+  map,
 } from 'rxjs';
 import { Comment } from '../models/comment.model';
 
@@ -21,7 +22,11 @@ export class CommentService {
 
   constructor(private http: HttpClient) {}
 
-  addComment(comment: { content: string; postId: number; username: string }): Observable<Comment> {
+  addComment(comment: {
+    content: string;
+    postId: number;
+    username: string;
+  }): Observable<Comment> {
     return this.http.post<Comment>(this.apiUrl, comment).pipe(
       tap((newComment) => {
         const currentComments = this.commentsSubject.value;
@@ -32,6 +37,12 @@ export class CommentService {
 
   getAllComments(): Observable<Comment[]> {
     return this.http.get<Comment[]>(this.apiUrl).pipe(
+      map((comments) =>
+        comments.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      ),
       tap((comments) => {
         this.commentsSubject.next(comments); // Atualizando o BehaviorSubject com os novos comentários
       }),
@@ -45,6 +56,12 @@ export class CommentService {
 
   getCommentsByPostId(postId: number): Observable<Comment[]> {
     return this.http.get<Comment[]>(`${this.apiUrl}/post/${postId}`).pipe(
+      map((comments) =>
+        comments.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+      ),
       tap((comments) => {
         this.commentsSubject.next(comments); // Atualiza o BehaviorSubject com os comentários recebidos
       }),
@@ -60,20 +77,24 @@ export class CommentService {
   }
 
   updateComment(commentId: number, commentData: Comment): Observable<Comment> {
-    return this.http.put<Comment>(`${this.apiUrl}/${commentId}`, commentData).pipe(
-      tap((updatedComment) => {
-        const currentComments = this.commentsSubject.value.map(comment =>
-          comment.id === commentId ? updatedComment : comment
-        );
-        this.commentsSubject.next(currentComments); // Atualizando o BehaviorSubject
-      })
-    );
+    return this.http
+      .put<Comment>(`${this.apiUrl}/${commentId}`, commentData)
+      .pipe(
+        tap((updatedComment) => {
+          const currentComments = this.commentsSubject.value.map((comment) =>
+            comment.id === commentId ? updatedComment : comment
+          );
+          this.commentsSubject.next(currentComments); // Atualizando o BehaviorSubject
+        })
+      );
   }
 
   deleteComment(commentId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${commentId}`).pipe(
       tap(() => {
-        const currentComments = this.commentsSubject.value.filter(comment => comment.id !== commentId);
+        const currentComments = this.commentsSubject.value.filter(
+          (comment) => comment.id !== commentId
+        );
         this.commentsSubject.next(currentComments); // Atualizando o BehaviorSubject
       })
     );

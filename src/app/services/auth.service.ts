@@ -42,10 +42,10 @@ export class AuthService {
     const email = localStorage.getItem('email');
     const username = localStorage.getItem('username');
     const profilePicture = localStorage.getItem('profilePicture');
-
+    const userRole = localStorage.getItem('userRole');
     if (userId && email && username && profilePicture) {
       const userDetails = {
-        role: savedRole, // Use savedRole aqui
+        userRole, // Use savedRole aqui
         userId,
         email,
         username,
@@ -89,7 +89,7 @@ export class AuthService {
 
           console.log('Login response:', response);
           localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('userName', response.username);
+          localStorage.setItem('username', response.username);
           localStorage.setItem('email', response.email);
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('userRole', response.userRole);
@@ -105,7 +105,7 @@ export class AuthService {
           } else {
             console.log('No profile picture found, setting to default.');
             profilePicUrl =
-              'http://localhost:4200/assets/img/default-profile.png';
+              'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png';
             localStorage.setItem('profilePicture', profilePicUrl);
           }
 

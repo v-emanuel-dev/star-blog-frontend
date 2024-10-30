@@ -14,7 +14,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  userName: string | null = null;
   isMenuOpen = false;
   isDropdownOpen = false;
   notifications: any[] = [];

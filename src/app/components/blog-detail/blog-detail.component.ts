@@ -22,7 +22,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   newComment: string = '';
   editCommentId: number | null = null;
   editCommentContent: string = '';
-  userName: string | undefined;
+  username: string | undefined;
   isLoggedIn: boolean = false;
   categories: Category[] = [];
   allCategories: Category[] = [];
@@ -47,7 +47,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
       .pipe(filter((details) => details !== null)) // Ignora valores nulos
       .subscribe((details) => {
         if (details && details.username) {
-          this.userName = details.username; // Agora pegamos o nome do userDetails
+          this.username = details.username; // Agora pegamos o nome do userDetails
         }
       });
   }
@@ -91,19 +91,19 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   }
 
   loadComments(): void {
-    this.loading = true; // Inicia o carregamento
+    this.loading = true;
 
     this.commentService.getCommentsByPostId(this.postId).subscribe(
       (comments: Comment[]) => {
-        this.comments = comments.sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        this.loading = false; // Finaliza o carregamento
+        this.comments = comments; // Os comentários já estão ordenados
+        if (this.comments.length === 0) {
+          this.snackbar('No comments found');
+        }
+        this.loading = false;
       },
       (error) => {
         this.snackbar('Error loading comments');
-        this.loading = false; // Finaliza o carregamento mesmo em erro
+        this.loading = false;
       }
     );
   }
@@ -125,7 +125,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
 
   addComment(): void {
     const userId = parseInt(localStorage.getItem('userId') || '0', 10) || null;
-    const username = localStorage.getItem('userName') || 'Anonymous';
+    const username = localStorage.getItem('username') || 'Anonymous';
 
     if (!this.newComment.trim()) {
       this.snackbar('Comment cannot be empty');
@@ -155,6 +155,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
       }
     );
   }
+
   editComment(comment: Comment): void {
     this.editCommentId = comment.id ?? null;
     this.editCommentContent = comment.content;
