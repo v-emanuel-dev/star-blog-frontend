@@ -32,7 +32,7 @@ export class ImageService {
         this.setProfilePic(storedPic);
         clearInterval(intervalId);
       }
-    }, 100);
+    }, 5);
   }
 
   setProfilePic(picUrl: string) {
