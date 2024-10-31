@@ -138,7 +138,7 @@ export class BlogListComponent implements OnInit {
               this.loading = false;
             },
           });
-        }, 10);
+        }, 5);
       },
       error: (error) => {
         this.snackbar('Error fetching user role.'); // Mensagem de erro ao buscar papel
