@@ -95,8 +95,9 @@ export class BlogEditComponent implements OnInit {
         this.title = post.title;
         this.content = post.content;
         this.visibility = post.visibility as 'public' | 'private';
-        this.selectedCategoryIds = post.categoryIds || [];
         this.loading = false;
+
+        this.loadCategoriesByPostId(this.postId);
       },
       error: () => {
         this.snackbar('Failed to load post.');
@@ -160,7 +161,10 @@ export class BlogEditComponent implements OnInit {
 
     this.categoryService.getCategoriesByPostId(postId).subscribe(
       (data: Category[]) => {
-        this.selectedCategoryIds = data.map((cat) => cat.id ?? 0);
+        const loadedCategoryIds = data.map((cat) => cat.id ?? 0);
+        this.selectedCategoryIds = loadedCategoryIds.filter((id) =>
+          this.selectedCategoryIds.includes(id)
+        );
       },
       (error) => {
         this.snackbar('Error retrieving categories by post');
