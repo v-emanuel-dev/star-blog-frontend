@@ -113,6 +113,25 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  loadPostsAdmin(): void {
+    this.loading = true;
+    this.postService.getPostsAdminDashboard().subscribe({
+      next: (posts) => {
+        // Ordenar posts por data de criação (mais recentes primeiro), caso 'created_at' esteja definido
+        posts.sort((a, b) => {
+          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return dateB - dateA;
+        });
+        this.loading = false;
+      },
+      error: () => {
+        this.snackbar('Failed to load posts.');
+        this.loading = false;
+      },
+    });
+  }
+
   loadCategories(newCategory?: Category): void {
     this.loading = true;
 
