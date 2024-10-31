@@ -113,19 +113,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  loadPostsAdmin(): void {
-    this.loading = true;
-    this.postService.getPostsAdminDashboard().subscribe({
-      next: () => {
-        this.loading = false;
-      },
-      error: () => {
-        this.snackbar('Failed to load posts.');
-        this.loading = false;
-      },
-    });
-  }
-
   loadCategories(newCategory?: Category): void {
     this.loading = true;
 
