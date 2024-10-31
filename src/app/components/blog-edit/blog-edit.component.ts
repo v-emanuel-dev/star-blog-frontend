@@ -171,7 +171,7 @@ export class BlogEditComponent implements OnInit {
           this.loading = false;
         }
       );
-    }, 100); // Atraso de 100ms
+    }, 10); // Atraso de 100ms
   }
 
   onCategoryChange(event: Event, categoryId: number): void {
