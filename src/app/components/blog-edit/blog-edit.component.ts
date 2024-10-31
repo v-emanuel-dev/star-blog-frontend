@@ -159,19 +159,20 @@ export class BlogEditComponent implements OnInit {
   loadCategoriesByPostId(postId: number): void {
     this.loading = true;
 
-    this.categoryService.getCategoriesByPostId(postId).subscribe(
-      (data: Category[]) => {
-        // Mapeia para obter apenas os ids, tratando `id` potencialmente `undefined`
-        this.selectedCategoryIds = data.map((cat) => cat.id ?? 0);
-        this.loading = false;
-      },
-      (error) => {
-        this.snackbar('Error retrieving categories by post');
-        this.loading = false;
-      }
-    );
+    setTimeout(() => {
+      this.categoryService.getCategoriesByPostId(postId).subscribe(
+        (data: Category[]) => {
+          this.selectedCategoryIds = data.map((cat) => cat.id ?? 0);
+        },
+        (error) => {
+          this.snackbar('Error retrieving categories by post');
+        },
+        () => {
+          this.loading = false;
+        }
+      );
+    }, 100); // Atraso de 100ms
   }
-
 
   onCategoryChange(event: Event, categoryId: number): void {
     event.preventDefault();
@@ -246,7 +247,7 @@ export class BlogEditComponent implements OnInit {
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 }
