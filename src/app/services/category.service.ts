@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { Category } from '../models/category.model';
 import { catchError, tap } from 'rxjs/operators';
+import { Category } from '../models/category.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,10 +22,9 @@ export class CategoryService {
 
   getAllCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(`${this.apiUrl}/all`).pipe(
-      tap((categories) => categories), // Log dos dados obtidos
+      tap((categories) => categories),
       catchError((error) => {
-        console.error('Error fetching categories:', error); // Log de erro
-        return of([]); // Retorna um array vazio em caso de erro
+        return of([]);
       })
     );
   }
@@ -56,8 +55,7 @@ export class CategoryService {
       })
       .pipe(
         catchError((error) => {
-          console.error('Error occurred while deleting category:', error);
-          return throwError(error); // Repassa o erro para que possa ser tratado onde a função é chamada
+          return throwError(error);
         })
       );
   }

@@ -91,8 +91,7 @@ export class LoginComponent {
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
-
 }

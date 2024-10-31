@@ -117,7 +117,6 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     this.postService.getPostsAdminDashboard().subscribe({
       next: (posts) => {
-        // Ordenar posts por data de criação (mais recentes primeiro), caso 'created_at' esteja definido
         posts.sort((a, b) => {
           const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
           const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
@@ -138,9 +137,8 @@ export class DashboardComponent implements OnInit {
     this.categoryService.getAllCategories().subscribe({
       next: (categories) => {
         if (newCategory) {
-          categories.unshift(newCategory); // Adiciona a nova categoria no início da lista
+          categories.unshift(newCategory);
         }
-        // Ordena as categorias após adicionar a nova, caso haja uma ordem específica desejada
         this.categories$ = of(
           categories.sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
         );
@@ -380,10 +378,10 @@ export class DashboardComponent implements OnInit {
           },
           error: (error) => {
             this.snackbar('Failed to update post.');
-            this.loading = false; // Finaliza o carregamento
+            this.loading = false;
           },
           complete: () => {
-            this.loading = false; // Finaliza o carregamento
+            this.loading = false;
           },
         });
     }
@@ -405,15 +403,14 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         this.snackbar('Failed to delete post.');
-        this.loading = false; // Finaliza o carregamento
+        this.loading = false;
       },
       complete: () => {
-        this.loading = false; // Finaliza o carregamento
+        this.loading = false;
       },
     });
   }
 
-  // Método para abrir o modal para qualquer tipo de item
   openModal(
     itemId: number,
     type: 'user' | 'post' | 'comment' | 'category'
@@ -423,14 +420,12 @@ export class DashboardComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-  // Método para fechar o modal
   closeModal(): void {
     this.isModalOpen = false;
     this.currentId = null;
     this.itemType = null;
   }
 
-  // Método para confirmar a deleção
   confirmDelete(
     itemId: number,
     type: 'user' | 'post' | 'comment' | 'category'
@@ -438,15 +433,10 @@ export class DashboardComponent implements OnInit {
     this.openModal(itemId, type);
   }
 
-  // Método para deletar o item conforme seu tipo
-  // ...
-
-  // Método para deletar o item conforme seu tipo
   deleteItemModal(): void {
     if (this.currentId && this.itemType) {
       let deleteObservable;
 
-      // Verifica o tipo do item e atribui o serviço correspondente
       switch (this.itemType) {
         case 'user':
           deleteObservable = this.userService.deleteUser(this.currentId);
@@ -467,12 +457,10 @@ export class DashboardComponent implements OnInit {
           return;
       }
 
-      // Executa o serviço de deleção e trata o resultado
       deleteObservable.subscribe({
         next: () => {
           this.snackbar(`${this.itemType} Deleted successfully!`);
 
-          // Recarrega os dados da lista correspondente ao tipo do item
           switch (this.itemType) {
             case 'user':
               this.loadUsers();
@@ -488,7 +476,7 @@ export class DashboardComponent implements OnInit {
               break;
           }
 
-          this.closeModal(); // Fecha o modal após a deleção
+          this.closeModal();
         },
         error: (err) => {
           this.snackbar(`Failed to delete ${this.itemType}.`);

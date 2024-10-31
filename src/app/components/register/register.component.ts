@@ -27,13 +27,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.userDetailsSubscription = this.authService.userDetails$.subscribe((details) => {
-      if (details && details.userRole) {
-        this.isAdmin = details.userRole === 'admin';
-      } else {
-        this.isAdmin = false;
+    this.userDetailsSubscription = this.authService.userDetails$.subscribe(
+      (details) => {
+        if (details && details.userRole) {
+          this.isAdmin = details.userRole === 'admin';
+        } else {
+          this.isAdmin = false;
+        }
       }
-    });
+    );
   }
 
   isLoggedIn(): boolean {
@@ -77,7 +79,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 

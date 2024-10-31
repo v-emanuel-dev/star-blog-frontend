@@ -1,20 +1,20 @@
 .custom-pill {
-  padding: 0.5rem 1rem; /* Ajuste do padding conforme necessário */
-  font-size: 0.8rem; /* Tamanho do texto (pode ser ajustado) */
-  font-weight: 600; /* Peso da fonte regular */
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .truncate-title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: block; /* ou inline-block */
-  max-width: 100%; /* Ajuste para limitar a largura conforme necessário */
+  display: block;
+  max-width: 100%;
 }
 
 .truncate-content {
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Quantidade de linhas antes de cortar */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

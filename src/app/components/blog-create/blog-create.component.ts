@@ -259,7 +259,7 @@ export class BlogCreateComponent implements OnInit {
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 }

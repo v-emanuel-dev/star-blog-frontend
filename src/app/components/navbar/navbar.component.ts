@@ -1,12 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { filter, Subscription } from 'rxjs';
-import { WebSocketService } from '../../services/websocket.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectorRef } from '@angular/core';
-import { ImageService } from '../../services/image.service';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { ImageService } from '../../services/image.service';
+import { WebSocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-navbar',
@@ -41,15 +40,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userDetailsSubscription = this.authService.userDetails$
-      .pipe(filter((details) => details !== null)) // Ignora valores nulos
+      .pipe(filter((details) => details !== null))
       .subscribe((details) => {
-        console.log('User details received:', details); // Log para ver os detalhes do usuário recebidos
         if (details && details.userRole) {
           this.userRole = details.userRole;
-          console.log('User role set to:', this.userRole); // Log para ver a role
           this.cd.detectChanges();
-        } else {
-          console.log('User details are missing or invalid.');
         }
       });
 
@@ -70,10 +65,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   isAdmin(): boolean {
     return this.userRole === 'admin';
-  }
-
-  ngAfterViewInit(): void {
-    this.cd.detectChanges();
   }
 
   isLoggedIn(): boolean {

@@ -140,7 +140,10 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
           this.handleUserUpdateSuccess(response);
           this.loading = false;
           if (response.profilePicture) {
-            const formattedProfilePic = response.profilePicture.replace(/\\/g, '/');
+            const formattedProfilePic = response.profilePicture.replace(
+              /\\/g,
+              '/'
+            );
             this.imageService.updateProfilePic(formattedProfilePic);
           }
         },
@@ -192,7 +195,7 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   snackbar(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: 'star-snackbar'
+      panelClass: 'star-snackbar',
     });
   }
 }

@@ -32,14 +32,14 @@ export class ImageService {
         this.setProfilePic(storedPic);
         clearInterval(intervalId);
       }
-    }, 1000); // Verifica a cada 1 segundo
+    }, 5);
   }
 
   setProfilePic(picUrl: string) {
-    const formattedUrl = picUrl.replace(/\\/g, '/'); // Garante que todas as barras invertidas sejam substituídas
-    localStorage.setItem('profilePicture', formattedUrl); // Armazena o valor formatado no localStorage
-    const fullUrl = this.getFullProfilePicUrl(formattedUrl); // Gera a URL completa
-    this.profilePicSubject.next(fullUrl); // Atualiza o BehaviorSubject com a URL completa
+    const formattedUrl = picUrl.replace(/\\/g, '/');
+    localStorage.setItem('profilePicture', formattedUrl);
+    const fullUrl = this.getFullProfilePicUrl(formattedUrl);
+    this.profilePicSubject.next(fullUrl);
   }
 
   updateProfilePic(picUrl: string): void {
@@ -47,7 +47,6 @@ export class ImageService {
   }
 
   getFullProfilePicUrl(picUrl: string): string {
-    // Confirma que a URL está formatada corretamente
     return picUrl.startsWith('http')
       ? picUrl
       : `https://blog-backend-production-c203.up.railway.app/${picUrl}`;

@@ -1,33 +1,33 @@
 body {
-  background-color: #f7fafc; /* Cor de fundo suave */
-  font-family: 'Arial', sans-serif; /* Tipografia limpa */
+  background-color: #f7fafc;
+  font-family: 'Arial', sans-serif;
 }
 
 h2 {
-  color: #4a5568; /* Título com cor mais escura */
+  color: #4a5568;
 }
 
 input, textarea, select {
-  transition: border-color 0.2s, box-shadow 0.2s; /* Suaviza a transição de estilos */
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:focus, textarea:focus, select:focus {
-  border-color: #3182ce; /* Cor da borda ao focar */
-  box-shadow: 0 0 5px rgba(50, 130, 206, 0.5); /* Sombra ao focar */
+  border-color: #3182ce;
+  box-shadow: 0 0 5px rgba(50, 130, 206, 0.5);
 }
 
 button {
-  transition: background-color 0.2s, transform 0.2s; /* Suaviza a transição de botões */
+  transition: background-color 0.2s, transform 0.2s;
 }
 
 button:hover {
-  transform: translateY(-2px); /* Eleva o botão ao passar o mouse */
+  transform: translateY(-2px);
 }
 
 .truncate-title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: block; /* ou inline-block */
-  max-width: 100%; /* Ajuste para limitar a largura conforme necessário */
+  display: block;
+  max-width: 100%;
 }

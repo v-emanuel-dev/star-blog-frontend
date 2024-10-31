@@ -44,10 +44,10 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar
   ) {
     this.userDetailsSubscription = this.authService.userDetails$
-      .pipe(filter((details) => details !== null)) // Ignora valores nulos
+      .pipe(filter((details) => details !== null))
       .subscribe((details) => {
         if (details && details.username) {
-          this.username = details.username; // Agora pegamos o nome do userDetails
+          this.username = details.username;
         }
       });
   }
@@ -75,17 +75,17 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   }
 
   loadPost(): void {
-    this.loading = true; // Inicia o carregamento
+    this.loading = true;
 
     this.postService.getPostById(this.postId).subscribe(
       (post) => {
         this.post = post;
         this.post.comments = this.post.comments || [];
-        this.loading = false; // Finaliza o carregamento
+        this.loading = false;
       },
       (error) => {
         this.snackbar('Error loading post');
-        this.loading = false; // Finaliza o carregamento mesmo em erro
+        this.loading = false;
       }
     );
   }
@@ -95,7 +95,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
 
     this.commentService.getCommentsByPostId(this.postId).subscribe(
       (comments: Comment[]) => {
-        this.comments = comments; // Os comentários já estão ordenados
+        this.comments = comments;
         if (this.comments.length === 0) {
           this.snackbar('No comments found');
         }
@@ -109,17 +109,15 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
   }
 
   loadCategories(): void {
-    this.loading = true; // Inicia o carregamento
-
+    this.loading = true;
     this.categoryService.getCategoriesByPostId(this.postId).subscribe(
       (data: Category[]) => {
-        // Ordena as categorias por id, assumindo que id mais alto significa categoria mais recente
         this.categories = data.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
-        this.loading = false; // Finaliza o carregamento
+        this.loading = false;
       },
       (error) => {
         this.snackbar('Error fetching categories');
-        this.loading = false; // Finaliza o carregamento mesmo em caso de erro
+        this.loading = false;
       }
     );
   }
@@ -130,7 +128,7 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
 
     if (!this.newComment.trim()) {
       this.snackbar('Comment cannot be empty');
-      return; // Exit the function if the comment is empty
+      return;
     }
 
     const comment: Comment = {

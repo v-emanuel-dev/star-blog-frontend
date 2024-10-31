@@ -1,12 +1,10 @@
-// src/app/services/websocket.service.ts
-import { Injectable } from '@angular/core';
-import { io, Socket } from 'socket.io-client';
-import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
 
-// Definindo uma interface para Notificações
 interface Notification {
-  id?: number; // Opcional, caso a notificação já tenha um ID do banco de dados
+  id?: number;
   userId: string;
   message: string;
   postId: string;
@@ -24,16 +22,14 @@ export class WebSocketService {
   constructor(private http: HttpClient) {
     this.socket = io('https://blog-backend-production-c203.up.railway.app');
 
-    this.socket.on('connect', () => {
-    });
+    this.socket.on('connect', () => {});
 
     this.socket.on('new-comment', (data: Notification) => {
       this.addNotification(data);
     });
 
-    // Inicializa notificações
     this.initializeNotifications();
-    this.watchForUserIdAndFetchNotifications(); // Monitora o userId
+    this.watchForUserIdAndFetchNotifications();
   }
 
   initializeNotifications() {
@@ -44,16 +40,15 @@ export class WebSocketService {
 
   fetchNotifications(userId: string) {
     this.http
-      .get<Notification[]>(`https://blog-backend-production-c203.up.railway.app/api/comments/${userId}/notifications`)
-      .subscribe(
-        (notifications) => {
-          const validNotifications = notifications.filter(n => n.message && n.postId);
-          this.notificationsSubject.next(validNotifications);
-        },
-        (error) => {
-          console.error('Erro ao recuperar notificações do banco de dados:', error);
-        }
-      );
+      .get<Notification[]>(
+        `http://localhost:3000/api/comments/${userId}/notifications`
+      )
+      .subscribe((notifications) => {
+        const validNotifications = notifications.filter(
+          (n) => n.message && n.postId
+        );
+        this.notificationsSubject.next(validNotifications);
+      });
   }
 
   private addNotification(notification: Notification) {
@@ -61,23 +56,20 @@ export class WebSocketService {
       const currentNotifications = this.notificationsSubject.value;
       const updatedNotifications = [...currentNotifications, notification];
       this.notificationsSubject.next(updatedNotifications);
-    } else {
-      console.warn('Notificação inválida recebida e não foi adicionada:', notification);
     }
   }
 
   private watchForUserIdAndFetchNotifications() {
     const intervalId = setInterval(() => {
-      this.userId = localStorage.getItem('userId'); // Atualiza o userId
+      this.userId = localStorage.getItem('userId');
 
       if (this.userId) {
-        this.fetchNotifications(this.userId); // Busca as notificações
-        clearInterval(intervalId); // Limpa o intervalo uma vez que o userId foi encontrado
+        this.fetchNotifications(this.userId);
+        clearInterval(intervalId);
       }
-    }, 1000); // Verifica a cada 1 segundo
+    }, 1000);
   }
 
-  // Método para desconectar o socket (opcional)
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();

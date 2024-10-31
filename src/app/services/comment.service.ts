@@ -18,7 +18,7 @@ export class CommentService {
   private apiUrl = 'https://blog-backend-production-c203.up.railway.app/api/comments';
 
   private commentsSubject = new BehaviorSubject<Comment[]>([]);
-  comments$ = this.commentsSubject.asObservable(); // Expondo o observable
+  comments$ = this.commentsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -30,7 +30,7 @@ export class CommentService {
     return this.http.post<Comment>(this.apiUrl, comment).pipe(
       tap((newComment) => {
         const currentComments = this.commentsSubject.value;
-        this.commentsSubject.next([...currentComments, newComment]); // Atualizando o BehaviorSubject
+        this.commentsSubject.next([...currentComments, newComment]);
       })
     );
   }
@@ -44,12 +44,11 @@ export class CommentService {
         )
       ),
       tap((comments) => {
-        this.commentsSubject.next(comments); // Atualizando o BehaviorSubject com os novos comentários
+        this.commentsSubject.next(comments);
       }),
       catchError((error) => {
-        console.error('Error fetching comments:', error);
-        this.commentsSubject.next([]); // Atualizando o BehaviorSubject com um array vazio em caso de erro
-        return of([]); // Retorna um array vazio em caso de erro
+        this.commentsSubject.next([]);
+        return of([]);
       })
     );
   }
@@ -63,10 +62,9 @@ export class CommentService {
         )
       ),
       tap((comments) => {
-        this.commentsSubject.next(comments); // Atualiza o BehaviorSubject com os comentários recebidos
+        this.commentsSubject.next(comments);
       }),
       catchError((error) => {
-        console.error('Erro ao buscar comentários:', error);
         return throwError(error);
       })
     );
@@ -84,7 +82,7 @@ export class CommentService {
           const currentComments = this.commentsSubject.value.map((comment) =>
             comment.id === commentId ? updatedComment : comment
           );
-          this.commentsSubject.next(currentComments); // Atualizando o BehaviorSubject
+          this.commentsSubject.next(currentComments);
         })
       );
   }
@@ -95,7 +93,7 @@ export class CommentService {
         const currentComments = this.commentsSubject.value.filter(
           (comment) => comment.id !== commentId
         );
-        this.commentsSubject.next(currentComments); // Atualizando o BehaviorSubject
+        this.commentsSubject.next(currentComments);
       })
     );
   }

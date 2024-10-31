@@ -46,9 +46,7 @@ export class BlogListComponent implements OnInit {
 
   ngOnInit(): void {
     this.userDetailsSubscription = this.authService.userDetails$
-      .pipe(
-        filter((details) => details !== null)
-      )
+      .pipe(filter((details) => details !== null))
       .subscribe((details) => {
         this.userRole = details.userRole;
         this.username = details.username;
