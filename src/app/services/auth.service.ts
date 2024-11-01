@@ -9,7 +9,8 @@ import { WebSocketService } from './websocket.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'https://blog-backend-production-c203.up.railway.app/api/auth';
+  private baseUrl =
+    'https://blog-backend-production-c203.up.railway.app/api/auth';
 
   private currentUserIdSubject = new BehaviorSubject<number | null>(
     this.getLoggedUserId()
@@ -50,6 +51,25 @@ export class AuthService {
       };
       this.userDetailsSubject.next(userDetails);
     }
+  }
+
+  updateUserDetails(updatedDetails: any) {
+    const userDetails = {
+      userId: updatedDetails.userId ? updatedDetails.userId.toString() : null,
+      email: updatedDetails.email || '',
+      username: updatedDetails.username || '',
+      profilePicture:
+        updatedDetails.profilePicture ||
+        'https://star-blog-frontend-git-main-vemanueldevs-projects.vercel.app/assets/img/default-profile.png',
+      userRole: updatedDetails.userRole || 'user',
+    };
+
+    this.userDetailsSubject.next(userDetails);
+    localStorage.setItem('userId', userDetails.userId || '');
+    localStorage.setItem('email', userDetails.email);
+    localStorage.setItem('username', userDetails.username);
+    localStorage.setItem('profilePicture', userDetails.profilePicture);
+    localStorage.setItem('userRole', userDetails.userRole);
   }
 
   setUserRole(role: string) {
